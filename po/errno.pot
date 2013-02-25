@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: errno 1.0.0\n"
+"Report-Msgid-Bugs-To: Tommy.Reynolds@MegaCoder.com\n"
+"POT-Creation-Date: 2013-02-24 21:07-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/errno.c:75
+msgid "Display all known values, else only selected items"
+msgstr ""
+
+#: src/errno.c:84
+msgid "List a table of all known values, both network and errno"
+msgstr ""
+
+#: src/errno.c:93
+msgid "decode network error values"
+msgstr ""
+
+#: src/errno.c:102
+msgid "decode X11 return values"
+msgstr ""
+
+#: src/errno.c:192
+msgid "[UNKNOWN]"
+msgstr ""
+
+#: src/errno.c:198
+msgid "[NO DESCRIPTION]"
+msgstr ""
+
+#: src/errno.c:542
+msgid "Internal prompt buffer too small"
+msgstr ""

@@ -1,0 +1,70 @@
+#!/bin/bash
+ME=$(basename $0)
+USAGE="usage: ${ME} [-o ofile]"
+ofile=
+while getopts o: c; do
+	case "${c}" in
+	o)	ofile="${OPTARG}";;
+	*)	echo "${USAGE}" >&2; exit 1;;
+	esac
+done
+shift $(expr ${OPTIND} - 1)
+if [ "${ofile}" ]; then
+	rm -f "${ofile}"
+	exec >"${ofile}"
+fi
+export LANG=C
+cat ${*:-/usr/include/errno.h}						|
+cpp -E -CC -dM								|
+sort -u -k2,2								|
+awk '
+BEGIN	{
+	print "#ifdef\tHAVE_CONFIG_H"
+	print "# include \"../config.h\""
+	print "#endif"
+	print "#include <unistd.h>"
+	print "#include <errno.h>"
+	print "#include \"dict.h\""
+	print ""
+	print "#if\tENABLE_NLS"
+	print "# define\t_(x)\t\tgettext( x )"
+	print "# define\tN_(x)\t\tx"
+	print "#else"
+	print "# define\t_(x)\t\tx"
+	print "# define\tN_(x)\t\tx"
+	print "#endif"
+	print ""
+}
+/^#define[[:space:]]+E/	{
+	name = $2
+	value = $3 + 0
+	$1 = $2 = $3 = $4 = $NF = ""
+	desc = $0
+	sub( /^[[:space:]]*/, "", desc )
+	sub( /[[:space:]]*$/, "", desc )
+	if( value > maxValue )	{
+		maxValue = value
+	}
+	values[      value ] = name
+	descriptions[ name ] = desc
+}
+END	{
+	++maxValue
+	printf "static dict_entry_t const \tnames[ %d ] =\t{\n", maxValue
+	for( value = 0; value < maxValue; ++value )	{
+		if( value in values )	{
+			name = values[ value ]
+			printf( "\t[ %-15s ] =\t{\n", name )
+			printf( "\t \"%s\",\n", name )
+			printf( "\t N_(\"%s\")\n", descriptions[ name ] )
+			printf( "\t},\n" )
+		}
+	}
+	printf "};\n"
+	print ""
+	printf "dict_t const sigdict =\t{\n"
+	printf "\tnames,\n"
+	printf "\t%d\n", maxValue
+	printf "};\n"
+}
+'
