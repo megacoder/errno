@@ -1,4 +1,4 @@
-EXTRA_DIST=Makefile.in.in						\
+EXTRA_DIST=Makefile.in							\
 	Makevars							\
 	Makevars.template						\
 	POTFILES.in							\

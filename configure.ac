@@ -75,7 +75,7 @@ AC_SUBST(localedir)
 AC_CONFIG_FILES([
 	Makefile
 	errno.spec
-	po/Makefile.in
+	po/Makefile
 	src/Makefile
 ])
 AC_OUTPUT
