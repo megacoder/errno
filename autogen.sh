@@ -7,6 +7,7 @@ else
 	LIBTOOLIZE=libtoolize
 fi
 markdown2 README.md | tee README.html | lynx -dump -stdin >README
+mkdir -p	m4
 aclocal		--force -I m4
 autoheader	--force
 $LIBTOOLIZE	--force
