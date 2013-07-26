@@ -1,55 +1,18 @@
-/*
- *------------------------------------------------------------------------
- * vim: ts=8 sw=8
- *------------------------------------------------------------------------
- * Author:   tf135c (James Reynolds)
- * Filename: errno.c
- * Created:  2007-03-12 15:52:32
- *------------------------------------------------------------------------
- */
-
-#ifdef	HAVE_CONFIG_H
-#  include "../config.h"
-#endif /* HAVE_CONFIG_H */
-
-
-#include <sys/types.h>
 #include <unistd.h>
-#include <netdb.h>
-
 #include "dict.h"
+#include "tcp_states.h"
 
-#include "gcc-compat.h"
-
-#if	ENABLE_NLS
-# define	_(x)		gettext( x )
-# define	N_(x)		x
-#else
-# define	_(x)		x
-# define	N_(x)		x
-# define	gettext( x )	x
-#endif
-
-static dict_entry_t const	names[] =	{
-	[ HOST_NOT_FOUND ] =	{
-	 "HOST_NOT_FOUND",
-	 N_("Authoritative answer host not found.")
-	},
-	[ TRY_AGAIN ] =	{
-	 "TRY_AGAIN",
-	 N_("Temporary error on authoritative name server. Try again.")
-	},
-	[ NO_RECOVERY ] =	{
-	 "NO_RECOVERY",
-	 N_("Non-recoverable DNS error.")
-	},
-	[ NO_DATA ] =	{
-	 "NO_DATA",
-	 N_("Valid name but no IP address found.")
-	},
-};
-
-dict_t const	netdict =	{
-	names,
-	DIM( names )
+static dict_entry_t const	tcp_names[] =	{
+	[TCP_CLOSE      ] = "TCP_CLOSE",
+	[TCP_CLOSE_WAIT ] = "TCP_CLOSE_WAIT",
+	[TCP_CLOSING    ] = "TCP_CLOSING",
+	[TCP_ESTABLISHED] = "TCP_ESTABLISHED",
+	[TCP_FIN_WAIT1  ] = "TCP_FIN_WAIT1",
+	[TCP_FIN_WAIT2  ] = "TCP_FIN_WAIT2",
+	[TCP_LAST_ACK   ] = "TCP_LAST_ACK",
+	[TCP_LISTEN     ] = "TCP_LISTEN",
+	[TCP_MAX_STATES ] = "TCP_MAX_STATES",
+	[TCP_SYN_RECV   ] = "TCP_SYN_RECV",
+	[TCP_SYN_SENT   ] = "TCP_SYN_SENT",
+	[TCP_TIME_WAIT  ] = "TCP_TIME_WAIT",
 };

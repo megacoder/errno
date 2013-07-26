@@ -1,6 +1,6 @@
 errno_SOURCES	= errno.c errnames.c netnames.c x11names.c gcc-compat.h dict.h
 bin_PROGRAMS	= errno
-EXTRA_DIST	= get-err-names get-x11-names
+EXTRA_DIST	= get-err-names get-x11-names get-net-names
 
 AM_CPPFLAGS	= \
 	-DLOCALEDIR=\""$(localedir)"\"
@@ -12,3 +12,6 @@ errnames.c: get-err-names
 
 x11names.c: get-x11-names
 	./get-x11-names -o $@
+
+netnames.c: get-net-names
+	./get-net-names -o $@

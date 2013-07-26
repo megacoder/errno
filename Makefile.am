@@ -1,5 +1,6 @@
 SUBDIRS	= intl po src
 
-EXTRA_DIST	= autogen.sh LICENSE README.md
+EXTRA_DIST	= LICENSE README.md					\
+	m4 intl gettext.h
 
 ACLOCAL_AMFLAGS = -I m4

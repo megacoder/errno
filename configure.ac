@@ -6,6 +6,7 @@ AC_INIT([errno], [1.0.1], [Tommy.Reynolds@MegaCoder])
 AC_CONFIG_SRCDIR([gettext.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([-Wall -Wpedantic -Wportability])
+AM_MAINTAINER_MODE
 
 # Checks for programs.
 AC_PROG_CXX
@@ -39,6 +40,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_FILES([
         Makefile
+        errno.spec
         po/Makefile.in
         src/Makefile
         intl/Makefile

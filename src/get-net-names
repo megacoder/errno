@@ -14,61 +14,30 @@ if [ "${ofile}" ]; then
 	exec >"${ofile}"
 fi
 export LANG=C
-cpp -E -CC -dD /usr/include/X11/X.h					|
-sort -n -k3,3								|
+gcc -E -P tcp_states.h							|
 awk '
 BEGIN	{
-	print "#ifdef\tHAVE_CONFIG_H"
-	print "# include \"../config.h\""
-	print "#endif"
 	print "#include <unistd.h>"
-	print "#include <X11/X.h>"
 	print "#include \"dict.h\""
+	print "#include \"tcp_states.h\""
 	print ""
-	print "#if\tENABLE_NLS"
-	print "# define\t_(x)\t\tgettext( x )"
-	print "# define\tN_(x)\t\tx"
-	print "#else"
-	print "# define\t_(x)\t\tx"
-	print "# define\tN_(x)\t\tx"
-	print "#endif"
-	print ""
-	maxname = 8
 }
-/^#define[[:space:]]/ {
-	name = $2
-	if( name ~ /^Success$/ || name ~ /^Bad/ )	{
-		if( length(name) > maxname )	{
-			maxname = length(name)
-		}
-		value = $3 + 0
-		if( value > maxValue )	{
-			maxValue = value
-		}
-		values[ value ] = name
-		$1 = $2 = $3 = $4 = $NF = ""
-		desc = $0
-		sub( /^[[:space:]]*/, "", desc )
-		sub( /[[:space:]]*$/, "", desc )
-		descriptions[ name ] = desc
-	}
+/TCP_/ {
+	gsub( /,/, "", $1 )
+	names[ ++n ] = $1
+	L = length( $1 )
+	if( L > maxlen ) maxlen = L
 }
 END	{
-	++maxValue
-	printf "static dict_entry_t const\tnames[ %d ] =\t{\n", maxValue
-	for( value = 0; value < maxValue; ++value )	{
-		if( value in values )	{
-			name = values[ value ]
-			printf( "  [ %-*s ] =\t{\n", maxname, name )
-			printf( "   \"%s\",\n", name )
-			printf( "   N_(\"%s\")\n", descriptions[name] )
-			printf( "  },\n" )
-		}
+	n = asort( names )
+	sfmt = sprintf( "[%%-%d.%ds]", maxlen, maxlen )
+	printf "static dict_entry_t const\ttcp_names[] =\t{\n", n
+	for( i = 1; i <= n; ++i )	{
+		s = names[i]
+		subscript = sprintf( sfmt, s )
+		printf( "\t%s = \"%s\",\n", subscript, s )
 	}
-	printf "};\n"
-	printf "dict_t const x11dict =\t{\n"
-	printf "\tnames,\n"
-	printf "\t%d\n", maxValue
 	printf "};\n"
 }
 '
+exit $?

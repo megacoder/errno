@@ -43,5 +43,3 @@ switch is used, the h_errno values are decoded instead.
 %lang(en_US) %{_datadir}/locale/en_US/LC_MESSAGES/%{name}.mo
 
 %changelog
-* Tue May 16 2009 Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
-- Booger
