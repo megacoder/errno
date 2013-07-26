@@ -5,7 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([errno], [1.0.1], [Tommy.Reynolds@MegaCoder])
 AC_CONFIG_SRCDIR([gettext.h])
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([-Wall -Wpedantic -Wportability])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -15,7 +15,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+LT_INIT
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lpopt':
@@ -35,7 +35,12 @@ AM_GNU_GETTEXT_VERSION([0.18.2])
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([setlocale strcasecmp strchr strerror strrchr])
 
-AC_CONFIG_FILES([Makefile
-                 po/Makefile.in
-                 src/Makefile])
+AC_CONFIG_MACRO_DIR([m4])
+
+AC_CONFIG_FILES([
+        Makefile
+        po/Makefile.in
+        src/Makefile
+])
+
 AC_OUTPUT
