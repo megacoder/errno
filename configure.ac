@@ -41,6 +41,7 @@ AC_CONFIG_FILES([
         Makefile
         po/Makefile.in
         src/Makefile
+        intl/Makefile
 ])
 
 AC_OUTPUT
