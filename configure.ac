@@ -8,9 +8,9 @@ AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 #
+AM_INIT_AUTOMAKE
 AM_GNU_GETTEXT_VERSION([0.18.1])
 AM_GNU_GETTEXT([external])
-AM_INIT_AUTOMAKE
 
 # Checks for programs.
 AC_PROG_CXX
@@ -75,7 +75,7 @@ AC_SUBST(localedir)
 AC_CONFIG_FILES([
 	Makefile
 	errno.spec
-	po/Makefile
+	po/Makefile.in
 	src/Makefile
 ])
 AC_OUTPUT
