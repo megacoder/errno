@@ -1,6 +1,12 @@
 SUBDIRS	= po src
 
-EXTRA_DIST	= autogen.sh LICENSE README.md
+INTLTOOL_FILES	=
+EXTRA_DIST	= autogen.sh LICENSE README.md ${INTLTOOL_FILES}
+
+DISTCLEANFILES	=intltool-extract					\
+		intltool-merge						\
+		intltool-update						\
+		po/.intltool-merge-cache
 
 ACLOCAL_AMFLAGS = -I m4
 
