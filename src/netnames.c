@@ -2,7 +2,7 @@
 #include "dict.h"
 #include "tcp_states.h"
 
-static dict_entry_t const	tcp_names[] =	{
+dict_entry_t const	netdict[] =	{
 	[TCP_CLOSE      ] = "TCP_CLOSE",
 	[TCP_CLOSE_WAIT ] = "TCP_CLOSE_WAIT",
 	[TCP_CLOSING    ] = "TCP_CLOSING",

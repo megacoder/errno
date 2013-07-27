@@ -1,4 +1,5 @@
-errno_SOURCES	= errno.c errnames.c netnames.c x11names.c gcc-compat.h dict.h
+errno_SOURCES	= dict.h errnames.c errno.c gcc-compat.h netnames.c        \
+         tcp_states.h x11names.c
 bin_PROGRAMS	= errno
 EXTRA_DIST	= get-err-names get-x11-names get-net-names
 
