@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: errno 0.0.0\n"
 "Report-Msgid-Bugs-To: Tommy.Reynolds@MegaCoder.com\n"
-"POT-Creation-Date: 2013-07-26 16:59-0500\n"
+"POT-Creation-Date: 2013-09-07 14:04-0500\n"
 "PO-Revision-Date: 2010-03-20 11:39-0500\n"
 "Last-Translator: Tommy Reynolds <reynolds@quadimodo.darkzone.un>\n"
 "Language-Team: English\n"
@@ -17,32 +17,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/errno.c:75
+#: src/errno.c:76
 msgid "Display all known values, else only selected items"
 msgstr "Display all known values, else only selected items"
 
-#: src/errno.c:84
+#: src/errno.c:85
 msgid "List a table of all known values, both network and errno"
 msgstr "List a table of all known values, both network and errno"
 
-#: src/errno.c:93
+#: src/errno.c:94
 msgid "decode network error values"
 msgstr "decode network error values"
 
-#: src/errno.c:102
+#: src/errno.c:103
 #, fuzzy
 msgid "decode X11 return values"
 msgstr "decode network error values"
 
-#: src/errno.c:192
+#: src/errno.c:193
 msgid "[UNKNOWN]"
 msgstr "[UNKNOWN]"
 
-#: src/errno.c:198
+#: src/errno.c:199
 msgid "[NO DESCRIPTION]"
 msgstr "[NO DESCRIPTION]"
 
-#: src/errno.c:542
+#: src/errno.c:546
 msgid "Internal prompt buffer too small"
 msgstr "Internal prompt buffer too small"
 
