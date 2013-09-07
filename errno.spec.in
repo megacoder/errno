@@ -32,6 +32,7 @@ switch is used, the h_errno values are decoded instead.
 %install
 	rm -rf ${RPM_BUILD_ROOT}
 	make prefix=${RPM_BUILD_ROOT}%{prefix} install
+	gzip <errno.1 >%{_mandir}/man1/errno.1.gz
 
 %clean
 	rm -rf ${RPM_BUILD_ROOT}
@@ -40,6 +41,7 @@ switch is used, the h_errno values are decoded instead.
 %defattr(-,root,root)
 %doc AUTHORS COPYING README.md INSTALL NEWS LICENSE TODO
 %{_bindir}/%{name}
+%{_mandir}/man1/errno.1
 %lang(en_US) %{_datadir}/locale/en_US/LC_MESSAGES/%{name}.mo
 
 %changelog
