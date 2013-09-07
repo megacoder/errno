@@ -1,0 +1,28 @@
+.TH ERRNO "1" "Sep 2013" "MegaCoder.com" "User Commands"
+.SH NAME
+errno \- list error numbers and meanings
+.SH SYNOPSIS
+.B errno
+[\fIOPTION\fR]... [\fINAME\fR|\fINUMBER\fR]...
+.SH DESCRIPTION
+.PP
+If given a number, displays the associated \fIerrno\fP value and a descriptive comment.
+If given a name, does the same.
+.TP
+\fB\-a\fR, \fB--all\fP
+display all known codes, names, and descriptions.
+.TP
+\fB\-n\fR, \fB--network\fP
+display network error codes, names, and descriptions.
+.TP
+\fB\-x\fR, \fB--X11\fP
+display X11 error codes, names, and descriptions.
+.SH AUTHOR
+Written by Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+.SH COPYRIGHT
+Copyright \(co 2013 Tommy Reynolds; all rights reserved; international copyright secured.
+.PP
+This code is licensed under the GPL v2, and no other.
+.SH "SEE ALSO"
+.PP
+\fIerrno(\fP3\fI)\fP
