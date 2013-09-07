@@ -28,6 +28,7 @@
 #include <libintl.h>
 #include <limits.h>
 #include <popt.h>
+#include <locale.h>
 
 #include "dict.h"
 
@@ -211,8 +212,11 @@ dict_by_name(
 	do	{
 		dict_entry_t const *	de;
 
+		if( !name )	{
+			break;
+		}
 		for( de = dict->d; de < (dict->d+dict->n); ++de )	{
-			if( !strcasecmp( name, de->name ) ) {
+			if( de->name && !strcasecmp( name, de->name ) ) {
 				retval = de;
 				break;
 			}
