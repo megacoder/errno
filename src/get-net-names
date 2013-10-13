@@ -21,6 +21,7 @@ BEGIN	{
 	print "#include \"dict.h\""
 	print "#include \"tcp_states.h\""
 	print ""
+	names[ ++n ] = 0
 }
 /TCP_/ {
 	gsub( /,/, "", $1 )
@@ -31,7 +32,7 @@ BEGIN	{
 END	{
 	n = asort( names )
 	sfmt = sprintf( "[%%-%d.%ds]", maxlen, maxlen )
-	printf "dict_entry_t const\tnetdict[] =\t{\n", n
+	printf "dict_entry_t const\tnetdict[%d] =\t{\n", n
 	for( i = 1; i <= n; ++i )	{
 		s = names[i]
 		subscript = sprintf( sfmt, s )
