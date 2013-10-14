@@ -2,7 +2,7 @@
 #include "dict.h"
 #include "tcp_states.h"
 
-dict_entry_t const	netdict[13] =	{
+static dict_entry_t const	names[13] =	{
 	[0              ] = "0",
 	[TCP_CLOSE      ] = "TCP_CLOSE",
 	[TCP_CLOSE_WAIT ] = "TCP_CLOSE_WAIT",
@@ -16,4 +16,9 @@ dict_entry_t const	netdict[13] =	{
 	[TCP_SYN_RECV   ] = "TCP_SYN_RECV",
 	[TCP_SYN_SENT   ] = "TCP_SYN_SENT",
 	[TCP_TIME_WAIT  ] = "TCP_TIME_WAIT",
+};
+
+dict_t	const	netdict =	{
+	names,
+	13
 };

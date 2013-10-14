@@ -32,12 +32,17 @@ BEGIN	{
 END	{
 	n = asort( names )
 	sfmt = sprintf( "[%%-%d.%ds]", maxlen, maxlen )
-	printf "dict_entry_t const\tnetdict[%d] =\t{\n", n
+	printf "static dict_entry_t const\tnames[%d] =\t{\n", n
 	for( i = 1; i <= n; ++i )	{
 		s = names[i]
 		subscript = sprintf( sfmt, s )
 		printf( "\t%s = \"%s\",\n", subscript, s )
 	}
+	printf "};\n"
+	printf "\n"
+	printf "dict_t\tconst\tnetdict =\	{\n"
+	printf "\tnames,\n"
+	printf "\t%d\n", n
 	printf "};\n"
 }
 '

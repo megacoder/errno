@@ -51,7 +51,6 @@
 
 static	char const *	me = PACKAGE;
 static	unsigned	nonfatal;
-static	unsigned	sw_a;
 static	unsigned	sw_e;
 static	unsigned	sw_n;
 static	unsigned	sw_l;
@@ -70,15 +69,6 @@ extern	dict_t const x11dict;
 
 static	const	struct poptOption	optionsTable[] =	{
 	{
-		"all",
-		'a',
-		POPT_ARG_NONE,
-		NULL,
-		'a',
-		N_("Display all known values, else only selected items"),
-		NULL
-	},
-	{
 		"errors",
 		'e',
 		POPT_ARG_NONE,
@@ -93,7 +83,7 @@ static	const	struct poptOption	optionsTable[] =	{
 		POPT_ARG_NONE,
 		NULL,
 		'l',
-		N_("List a table of all known values, both network and errno"),
+		N_("List a table of all known values"),
 		NULL
 	},
 	{
@@ -453,24 +443,42 @@ get_last(
 	return( last );
 }
 
+static	char const *
+name_of(
+	dict_entry_t const * const	de
+)
+{
+	char const *	s = de ? de->name : NULL;
+	return( s ? s : "" );
+}
+
 static	void
-do_all(
+do_list(
 	void
 )
 {
+	char const	notta[] = "_______________";
 	size_t const	last = get_last();
 	size_t		e;
 
 	for( e = 0; e < last; ++e )	{
+		static const char	notta[] = "";
+		dict_entry_t const *	de;
+
+		printf( "%d", e );
 		if( sw_e )	{
-			do_entry( &errdict, e );
+			de = dict_by_value( &errdict, e );
+			printf( "\t%-15s",  name_of( de ) );
 		}
 		if( sw_n )	{
-			do_entry( &netdict, e );
+			de = dict_by_value( &netdict, e );
+			printf( "\t%-15s",  name_of( de ) );
 		}
 		if( sw_x )	{
-			do_entry( &x11dict, e );
+			de = dict_by_value( &x11dict, e );
+			printf( "\t%-15s",  name_of( de ) );
 		}
+		printf( "\n" );
 	}
 }
 
@@ -512,10 +520,15 @@ main(
 		while( (c = poptGetNextOpt( optCon )) >= 0 )	{
 			switch( c )	{
 			default:
-				printf( "c=0x%02X\n", c );
-				break;
-			case 'a':
-				++sw_a;
+				if( isalnum(c) | ispunct(c)
+				)	{
+					printf("Unknown switch -%c\n", c );
+				} else	{
+					printf(
+						"Unknown switch c=0x%02X\n",
+						c
+					);
+				}
 				break;
 			case 'l':
 				++sw_l;
@@ -540,104 +553,82 @@ main(
 		}
 	} while( 0 );
 	if( !nonfatal ) do	{
-		if( (sw_e+sw_n+sw_x) == 0 )	{
+		size_t const	last = get_last();
+		int const	choices = (sw_e | sw_n | sw_x);
+		size_t		e;
+
+		if( sw_l && !choices )	{
 			sw_e = 1;
+			sw_n = 1;
+			sw_x = 1;
 		}
-		if( sw_a )	{
-			/* Show everything, unconditionally		 */
-			do_all();
-		} else if( sw_l )	{
-			/* Next, consider the "-l" switch		 */
-			size_t const	last = get_last();
-			size_t		e;
+		if( sw_l )	{
+			do_list();
+			break;
+		}
+		/* Process command line arguments, if any	 */
+		if(poptPeekArg( optCon ) )	{
+			/* More arguments remaining		 */
+			char const *	name;
 
-			for( e = 0; e < last; ++e )	{
-				dict_entry_t const *	de;
-				char const *	errname;
-				char const *	netname;
-				char const *	x11name;
-
-				de = dict_by_value( &errdict, e );
-				errname = de ? de->name : NULL;
-				de = dict_by_value( &netdict, e );
-				netname = de ? de->name : NULL;
-				de = dict_by_value( &x11dict, e );
-				x11name = de ? de->name : NULL;
-				if( errname || netname || x11name )	{
-					printf(
-						"%d\t%-15s\t%-15s\t%s\n",
-						e,
-						errname ? errname : "",
-						netname ? netname : "",
-						x11name ? x11name : ""
-					);
-				}
+			while( (name = poptGetArg( optCon )) != NULL ) {
+				explain_term( name );
 			}
 		} else	{
-			/* Process command line arguments, if any	 */
-			if(poptPeekArg( optCon ) )	{
-				/* More arguments remaining		 */
-				char const *	name;
+			int const	interactive = isatty(fileno( stdin ) );
+			char		prompt[ BUFSIZ + 1 ];
+			size_t		needed;
 
-				while( ( name = poptGetArg( optCon )) != NULL ) {
+			/* Build prompt, even if we don't need it */
+			needed = snprintf(
+				prompt,
+				sizeof( prompt ),
+				"%s> ",
+				me
+			);
+			prompt[ DIM( prompt ) - 1 ] = '\0';
+			if( needed >= sizeof( prompt ) )	{
+				fprintf(
+					stderr,
+					"%s: %s\n",
+					_( "Internal prompt buffer too small" )
+				);
+				exit( 1 );
+				/* NOTREACHED			 */
+			}
+			/* Get an process each stdin line	 */
+			while(!feof( stdin ) )	{
+				char * const	line = readline(
+					interactive ? prompt: NULL
+				);
+				char *		name;
+				char *		lp;
+
+				/* Recognize EOF		 */
+				if( !line )	{
+					if( interactive )	{
+						printf( "\n[EOF]\n" );
+					}
+					break;
+				}
+				if( interactive )	{
+					add_history( line );
+				}
+				/* Drop comments		 */
+				lp = strchr( line, '#' );
+				if( lp )	{
+					*lp = '\0';
+				}
+				/* Explain remaining tokens	 */
+				for(
+					lp = line;
+					( name = strtok( lp, " \t\n" )) != NULL;
+					lp = NULL
+				)	{
 					explain_term( name );
 				}
-			} else	{
-				int const	interactive = isatty(fileno( stdin ) );
-				char		prompt[ BUFSIZ + 1 ];
-				size_t		needed;
-
-				/* Build prompt, even if we don't need it */
-				needed = snprintf(
-					prompt,
-					sizeof( prompt ),
-					"%s> ",
-					me
-				);
-				prompt[ DIM( prompt ) - 1 ] = '\0';
-				if( needed >= sizeof( prompt ) )	{
-					fprintf(
-						stderr,
-						"%s: %s\n",
-						_( "Internal prompt buffer too small" )
-					);
-					exit( 1 );
-					/* NOTREACHED			 */
-				}
-				/* Get an process each stdin line	 */
-				while(!feof( stdin ) )	{
-					char * const	line = readline(
-						interactive ? prompt: NULL
-					);
-					char *		name;
-					char *		lp;
-
-					/* Recognize EOF		 */
-					if( !line )	{
-						if( interactive )	{
-							printf( "\n[EOF]\n" );
-						}
-						break;
-					}
-					if( interactive )	{
-						add_history( line );
-					}
-					/* Drop comments		 */
-					lp = strchr( line, '#' );
-					if( lp )	{
-						*lp = '\0';
-					}
-					/* Explain remaining tokens	 */
-					for(
-						lp = line;
-						( name = strtok( lp, " \t\n" )) != NULL;
-						lp = NULL
-					)	{
-						explain_term( name );
-					}
-					/* Discard the line, we're done	 */
-					free( line );
-				}
+				/* Discard the line, we're done	 */
+				free( line );
 			}
 		}
 	} while( 0 );

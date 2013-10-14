@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([errno], [1.1.0], [Tommy.Reynolds@MegaCoder])
+AC_INIT([errno], [1.1.1], [Tommy.Reynolds@MegaCoder])
 AC_CONFIG_SRCDIR([gettext.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
