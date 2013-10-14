@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: errno 1.1.0\n"
 "Report-Msgid-Bugs-To: Tommy.Reynolds@MegaCoder.com\n"
-"POT-Creation-Date: 2013-10-14 14:01-0500\n"
+"POT-Creation-Date: 2013-10-14 16:32-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,34 +17,30 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/errno.c:78
-msgid "Display all known values, else only selected items"
-msgstr ""
-
-#: src/errno.c:87
+#: src/errno.c:77
 msgid "Treat N as a errno value."
 msgstr ""
 
-#: src/errno.c:96
-msgid "List a table of all known values, both network and errno"
+#: src/errno.c:86
+msgid "List a table of all known values"
 msgstr ""
 
-#: src/errno.c:105
+#: src/errno.c:95
 msgid "decode network error values"
 msgstr ""
 
-#: src/errno.c:114
+#: src/errno.c:104
 msgid "decode X11 return values"
 msgstr ""
 
-#: src/errno.c:205
+#: src/errno.c:195
 msgid "[UNKNOWN]"
 msgstr ""
 
-#: src/errno.c:211
+#: src/errno.c:201
 msgid "[NO DESCRIPTION]"
 msgstr ""
 
-#: src/errno.c:602
+#: src/errno.c:594
 msgid "Internal prompt buffer too small"
 msgstr ""
