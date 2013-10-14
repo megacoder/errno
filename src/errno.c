@@ -58,9 +58,9 @@ static	unsigned	sw_l;
 static	unsigned	sw_x;
 static	poptContext	optCon;
 
-extern	dict_t const errdict[];
-extern	dict_t const netdict[];
-extern	dict_t const x11dict[];
+extern	dict_t const errdict;
+extern	dict_t const netdict;
+extern	dict_t const x11dict;
 
 /*
  *------------------------------------------------------------------------
@@ -369,18 +369,14 @@ explain_term(
 	char const *		name
 )
 {
-	int		what;
-
-	what = 0;
 	if( sw_e )	{
-		what += explain_dict_term( errdict, name );
+		explain_dict_term( &errdict, name );
 	}
 	if( sw_n )	{
-		what += explain_dict_term( netdict, name );
+		explain_dict_term( &netdict, name );
 	} else if( sw_x )	{
-		what += explain_dict_term( x11dict, name );
+		explain_dict_term( &x11dict, name );
 	}
-	return( what ? 1 : 0 );
 }
 
 #if	!HAVE_LIBREADLINE
@@ -442,17 +438,17 @@ get_last(
 	void
 )
 {
-	int		last;
+	size_t		last;
 
 	last = 0;
 	if( sw_e )	{
-		last = max( last, errdict->n );
+		last = max( last, errdict.n );
 	}
 	if( sw_n )	{
-		last = max( last, netdict->n );
+		last = max( last, netdict.n );
 	}
 	if( sw_x )	{
-		last = max( last, x11dict->n );
+		last = max( last, x11dict.n );
 	}
 	return( last );
 }
@@ -462,18 +458,18 @@ do_all(
 	void
 )
 {
-	int const	last = get_last();
-	int		e;
+	size_t const	last = get_last();
+	size_t		e;
 
 	for( e = 0; e < last; ++e )	{
 		if( sw_e )	{
-			do_entry( errdict, e );
+			do_entry( &errdict, e );
 		}
 		if( sw_n )	{
-			do_entry( netdict, e );
+			do_entry( &netdict, e );
 		}
 		if( sw_x )	{
-			do_entry( x11dict, e );
+			do_entry( &x11dict, e );
 		}
 	}
 }
@@ -561,11 +557,11 @@ main(
 				char const *	netname;
 				char const *	x11name;
 
-				de = dict_by_value( errdict, e );
+				de = dict_by_value( &errdict, e );
 				errname = de ? de->name : NULL;
-				de = dict_by_value( netdict, e );
+				de = dict_by_value( &netdict, e );
 				netname = de ? de->name : NULL;
-				de = dict_by_value( x11dict, e );
+				de = dict_by_value( &x11dict, e );
 				x11name = de ? de->name : NULL;
 				if( errname || netname || x11name )	{
 					printf(
