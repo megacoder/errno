@@ -566,6 +566,9 @@ main(
 			do_list();
 			break;
 		}
+		if( !choices )	{
+			sw_e = 1;
+		}
 		/* Process command line arguments, if any	 */
 		if(poptPeekArg( optCon ) )	{
 			/* More arguments remaining		 */
