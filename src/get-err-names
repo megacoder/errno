@@ -62,7 +62,7 @@ END	{
 	}
 	printf "};\n"
 	print ""
-	printf "dict_t const sigdict =\t{\n"
+	printf "dict_t const errdict =\t{\n"
 	printf "\tnames,\n"
 	printf "\t%d\n", maxValue
 	printf "};\n"
