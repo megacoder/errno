@@ -1,0 +1,71 @@
+#!/bin/bash
+ME=$(basename $0)
+USAGE="usage: ${ME} [-o ofile]"
+ofile=
+while getopts o: c; do
+	case "${c}" in
+	o)	ofile="${OPTARG}";;
+	*)	echo "${USAGE}" >&2; exit 1;;
+	esac
+done
+shift $(expr ${OPTIND} - 1)
+if [ "${ofile}" ]; then
+	rm -f "${ofile}"
+	exec >"${ofile}"
+fi
+export LANG=C
+cat ${*:-/usr/include/bits/signum.h}					|
+sort -u -k2,2								|
+awk '
+function trim( s,	v )	{
+	v = s
+	sub( /^[[:space:]]*/, "", v )
+	sub( /[[:space:]]*$/, "", v )
+	return v
+}
+BEGIN	{
+	print "#ifdef\tHAVE_CONFIG_H"
+	print "# include \"../config.h\""
+	print "#endif"
+	print "#include <unistd.h>"
+	print "#include <errno.h>"
+	print "#include \"dict.h\""
+	print ""
+	print "#if\tENABLE_NLS"
+	print "# define\t_(x)\t\tgettext( x )"
+	print "# define\tN_(x)\t\tx"
+	print "#else"
+	print "# define\t_(x)\t\tx"
+	print "# define\tN_(x)\t\tx"
+	print "#endif"
+	print ""
+	printf "static dict_entry_t const \tnames[] =\t{\n"
+}
+/^#define[[:space:]]+SIG/	{
+	name = $2
+	value = $3 + 0
+	if( name == "SIGRTMAX" )	{
+		desc = "Last real-time signal."
+	} else if( name == "SIGRTMIN" )	{
+		desc = "First real-time signal."
+	} else	{
+		$1 = $2 = $3 = ""
+		desc = $0
+	}
+	sub( /^.*[/][*][[:space:]]*/, "", desc )
+	sub( /[[:space:]]*[*][/][[:space:]]*$/, "", desc )
+	desc = trim( desc )
+	if( length(desc) == 0 )	{
+		desc = ""
+	}
+	printf( "\t[ %s ]\t= { \"%s\",\tN_(\"%s\") },\n", name, name, desc )
+}
+END	{
+	printf "};\n"
+	print ""
+	printf "dict_t const sigdict =\t{\n"
+	printf "\tnames,\n"
+	printf "\tsizeof(names) / sizeof(names[0])\n"
+	printf "};\n"
+}
+'
