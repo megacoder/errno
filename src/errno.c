@@ -375,7 +375,11 @@ explain_term(
 	}
 	if( sw_n )	{
 		explain_dict_term( &netdict, name );
-	} else if( sw_x )	{
+	}
+	if( sw_s )	{
+		explain_dict_term( &sigdict, name );
+	}
+	if( sw_x )	{
 		explain_dict_term( &x11dict, name );
 	}
 }
@@ -568,7 +572,7 @@ main(
 	} while( 0 );
 	if( !nonfatal ) do	{
 		size_t const	last = get_last();
-		int const	choices = (sw_e | sw_n | sw_x);
+		int const	choices = (sw_e | sw_n | sw_s | sw_x);
 		size_t		e;
 
 		if( sw_l && !choices )	{
