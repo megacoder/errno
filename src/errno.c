@@ -51,12 +51,14 @@
 
 static	char const *	me = PACKAGE;
 static	unsigned	nonfatal;
-static	unsigned	sw_e;
-static	unsigned	sw_n;
 static	unsigned	sw_l;
-static	unsigned	sw_s;
-static	unsigned	sw_x;
 static	poptContext	optCon;
+static	unsigned	choices;
+
+#define	CHOICE_E	(1 << 0)
+#define	CHOICE_N	(1 << 1)
+#define	CHOICE_S	(1 << 2)
+#define	CHOICE_X	(1 << 3)
 
 extern	dict_t const errdict;
 extern	dict_t const netdict;
@@ -370,16 +372,16 @@ explain_term(
 	char const *		name
 )
 {
-	if( sw_e )	{
+	if( choices & CHOICE_E )	{
 		explain_dict_term( &errdict, name );
 	}
-	if( sw_n )	{
+	if( choices & CHOICE_N )	{
 		explain_dict_term( &netdict, name );
 	}
-	if( sw_s )	{
+	if( choices & CHOICE_S )	{
 		explain_dict_term( &sigdict, name );
 	}
-	if( sw_x )	{
+	if( choices & CHOICE_X )	{
 		explain_dict_term( &x11dict, name );
 	}
 }
@@ -446,13 +448,16 @@ get_last(
 	size_t		last;
 
 	last = 0;
-	if( sw_e )	{
+	if( choices & CHOICE_E )	{
 		last = max( last, errdict.n );
 	}
-	if( sw_n )	{
+	if( choices & CHOICE_N )	{
 		last = max( last, netdict.n );
 	}
-	if( sw_x )	{
+	if( choices & CHOICE_S )	{
+		last = max( last, sigdict.n );
+	}
+	if( choices & CHOICE_X )	{
 		last = max( last, x11dict.n );
 	}
 	return( last );
@@ -481,15 +486,19 @@ do_list(
 		dict_entry_t const *	de;
 
 		printf( "%d", e );
-		if( sw_e )	{
+		if( choices & CHOICE_E )	{
 			de = dict_by_value( &errdict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
-		if( sw_n )	{
+		if( choices & CHOICE_N )	{
 			de = dict_by_value( &netdict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
-		if( sw_x )	{
+		if( choices & CHOICE_S )	{
+			de = dict_by_value( &sigdict, e );
+			printf( "\t%-15s",  name_of( de ) );
+		}
+		if( choices & CHOICE_X )	{
 			de = dict_by_value( &x11dict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
@@ -545,17 +554,20 @@ main(
 					);
 				}
 				break;
+			case 'e':
+				choices |= CHOICE_E;
+				break;
 			case 'l':
 				++sw_l;
 				break;
 			case 'n':
-				++sw_n;
+				choices |= CHOICE_N;
 				break;
 			case 's':
-				++sw_s;
+				choices |= CHOICE_S;
 				break;
 			case 'x':
-				++sw_x;
+				choices |= CHOICE_X;
 				break;
 			}
 		}
@@ -572,21 +584,17 @@ main(
 	} while( 0 );
 	if( !nonfatal ) do	{
 		size_t const	last = get_last();
-		int const	choices = (sw_e | sw_n | sw_s | sw_x);
 		size_t		e;
 
-		if( sw_l && !choices )	{
-			sw_e = 1;
-			sw_n = 1;
-			sw_s = 1;
-			sw_x = 1;
-		}
 		if( sw_l )	{
+			if( !choices )	{
+				choices = ~0U;
+			}
 			do_list();
 			break;
 		}
 		if( !choices )	{
-			sw_e = 1;
+			choices |= CHOICE_E;
 		}
 		/* Process command line arguments, if any	 */
 		if(poptPeekArg( optCon ) )	{
