@@ -29,6 +29,7 @@ BEGIN	{
 	print "#endif"
 	print "#include <unistd.h>"
 	print "#include <errno.h>"
+	print "#include <signal.h>"
 	print "#include \"dict.h\""
 	print ""
 	print "#if\tENABLE_NLS"
