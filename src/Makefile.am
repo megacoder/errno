@@ -16,3 +16,6 @@ x11names.c: get-x11-names
 
 netnames.c: get-net-names
 	./get-net-names -o $@
+
+signames.c: get-sig-names
+	./get-sig-names -o $@
