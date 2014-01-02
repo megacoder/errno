@@ -34,6 +34,7 @@ BEGIN	{
 	print "# define\tN_(x)\t\tx"
 	print "#endif"
 	print ""
+	printf "static dict_entry_t const \tnames[] =\t{\n"
 }
 /^#define[[:space:]]+E/	{
 	name = $2
@@ -42,29 +43,14 @@ BEGIN	{
 	desc = $0
 	sub( /^[[:space:]]*/, "", desc )
 	sub( /[[:space:]]*$/, "", desc )
-	if( value > maxValue )	{
-		maxValue = value
-	}
-	values[      value ] = name
-	descriptions[ name ] = desc
+	printf( "\t[ %s ]\t= { \"%s\",\tN_(\"%s\") },\n", name, name, desc )
 }
 END	{
-	++maxValue
-	printf "static dict_entry_t const \tnames[ %d ] =\t{\n", maxValue
-	for( value = 0; value < maxValue; ++value )	{
-		if( value in values )	{
-			name = values[ value ]
-			printf( "\t[ %-15s ] =\t{\n", name )
-			printf( "\t \"%s\",\n", name )
-			printf( "\t N_(\"%s\")\n", descriptions[ name ] )
-			printf( "\t},\n" )
-		}
-	}
 	printf "};\n"
 	print ""
 	printf "dict_t const errdict =\t{\n"
 	printf "\tnames,\n"
-	printf "\t%d\n", maxValue
+	printf "\tsizeof(names) / sizeof(names[0])\n"
 	printf "};\n"
 }
 '

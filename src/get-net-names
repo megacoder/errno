@@ -21,28 +21,21 @@ BEGIN	{
 	print "#include \"dict.h\""
 	print "#include \"tcp_states.h\""
 	print ""
-	names[ ++n ] = 0
+	printf "static dict_entry_t const\tnames[] =\t{\n"
 }
 /TCP_/ {
 	gsub( /,/, "", $1 )
-	names[ ++n ] = $1
-	L = length( $1 )
-	if( L > maxlen ) maxlen = L
+	subscript = sprintf( "[%s]", $1 )
+	name = sprintf( "\"%s\"", $1 )
+	desc = sprintf( "\"%s\"", substr( $1, 5 ) )
+	printf( "\t%-19s = { %20s, %s },\n", subscript, name, desc )
 }
 END	{
-	n = asort( names )
-	sfmt = sprintf( "[%%-%d.%ds]", maxlen, maxlen )
-	printf "static dict_entry_t const\tnames[%d] =\t{\n", n
-	for( i = 1; i <= n; ++i )	{
-		s = names[i]
-		subscript = sprintf( sfmt, s )
-		printf( "\t%s = \"%s\",\n", subscript, s )
-	}
 	printf "};\n"
 	printf "\n"
-	printf "dict_t\tconst\tnetdict =\	{\n"
+	printf "dict_t\tconst\tnetdict =\t{\n"
 	printf "\tnames,\n"
-	printf "\t%d\n", n
+	printf "\tsizeof(names)/sizeof(names[0])\n", n
 	printf "};\n"
 }
 '

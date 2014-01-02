@@ -33,42 +33,24 @@ BEGIN	{
 	print "# define\tN_(x)\t\tx"
 	print "#endif"
 	print ""
-	maxname = 8
+	printf "static dict_entry_t const\tnames[] =\t{\n"
 }
 /^#define[[:space:]]/ {
 	name = $2
 	if( name ~ /^Success$/ || name ~ /^Bad/ )	{
-		if( length(name) > maxname )	{
-			maxname = length(name)
-		}
 		value = $3 + 0
-		if( value > maxValue )	{
-			maxValue = value
-		}
-		values[ value ] = name
 		$1 = $2 = $3 = $4 = $NF = ""
 		desc = $0
 		sub( /^[[:space:]]*/, "", desc )
 		sub( /[[:space:]]*$/, "", desc )
-		descriptions[ name ] = desc
+		printf( "  [ %s\t] = { \"%s\", \"%s\" },\n", name, name, desc )
 	}
 }
 END	{
-	++maxValue
-	printf "static dict_entry_t const\tnames[ %d ] =\t{\n", maxValue
-	for( value = 0; value < maxValue; ++value )	{
-		if( value in values )	{
-			name = values[ value ]
-			printf( "  [ %-*s ] =\t{\n", maxname, name )
-			printf( "   \"%s\",\n", name )
-			printf( "   N_(\"%s\")\n", descriptions[name] )
-			printf( "  },\n" )
-		}
-	}
 	printf "};\n"
 	printf "dict_t const x11dict =\t{\n"
 	printf "\tnames,\n"
-	printf "\t%d\n", maxValue
+	printf "\tsizeof(names)/sizeof(names[0])\n"
 	printf "};\n"
 }
 '
