@@ -54,11 +54,13 @@ static	unsigned	nonfatal;
 static	unsigned	sw_e;
 static	unsigned	sw_n;
 static	unsigned	sw_l;
+static	unsigned	sw_s;
 static	unsigned	sw_x;
 static	poptContext	optCon;
 
 extern	dict_t const errdict;
 extern	dict_t const netdict;
+extern	dict_t const sigdict;
 extern	dict_t const x11dict;
 
 /*
@@ -68,6 +70,15 @@ extern	dict_t const x11dict;
  */
 
 static	const	struct poptOption	optionsTable[] =	{
+	{
+		"signals",
+		's',
+		POPT_ARG_NONE,
+		NULL,
+		's',
+		N_("Treat N as a signal value."),
+		NULL
+	},
 	{
 		"errors",
 		'e',
@@ -536,6 +547,9 @@ main(
 			case 'n':
 				++sw_n;
 				break;
+			case 's':
+				++sw_s;
+				break;
 			case 'x':
 				++sw_x;
 				break;
@@ -560,6 +574,7 @@ main(
 		if( sw_l && !choices )	{
 			sw_e = 1;
 			sw_n = 1;
+			sw_s = 1;
 			sw_x = 1;
 		}
 		if( sw_l )	{
