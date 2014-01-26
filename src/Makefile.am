@@ -1,7 +1,8 @@
 errno_SOURCES	= dict.h errnames.c errno.c gcc-compat.h netnames.c        \
-         signames.c tcp_states.h x11names.c
+         signames.c tcp_states.h x11names.c htmlnames.c
 bin_PROGRAMS	= errno
-EXTRA_DIST	= get-err-names get-x11-names get-net-names get-sig-names
+EXTRA_DIST	= get-err-names get-x11-names get-net-names get-sig-names \
+		  get-html-names rfc1945.txt
 
 AM_CPPFLAGS	= \
 	-DLOCALEDIR=\""$(localedir)"\"
@@ -19,3 +20,6 @@ netnames.c: get-net-names
 
 signames.c: get-sig-names
 	./get-sig-names -o $@
+
+htmlnames.c: get-html-names rfc1945.txt
+	./get-html-names -o $@ rfc1945.txt
