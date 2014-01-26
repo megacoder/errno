@@ -58,11 +58,13 @@ static	unsigned	choices;
 #define	CHOICE_E	(1 << 0)
 #define	CHOICE_N	(1 << 1)
 #define	CHOICE_S	(1 << 2)
-#define	CHOICE_X	(1 << 3)
+#define	CHOICE_W	(1 << 3)
+#define	CHOICE_X	(1 << 4)
 
 extern	dict_t const errdict;
 extern	dict_t const netdict;
 extern	dict_t const sigdict;
+extern	dict_t const webdict;
 extern	dict_t const x11dict;
 
 /*
@@ -115,6 +117,15 @@ static	const	struct poptOption	optionsTable[] =	{
 		NULL,
 		'x',
 		N_("decode X11 return values"),
+		NULL
+	},
+	{
+		"web",
+		'w',
+		POPT_ARG_NONE,
+		NULL,
+		'w',
+		N_("decode html web status values"),
 		NULL
 	},
 	POPT_AUTOHELP
@@ -381,6 +392,9 @@ explain_term(
 	if( choices & CHOICE_S )	{
 		explain_dict_term( &sigdict, name );
 	}
+	if( choices & CHOICE_W )	{
+		explain_dict_term( &webdict, name );
+	}
 	if( choices & CHOICE_X )	{
 		explain_dict_term( &x11dict, name );
 	}
@@ -457,6 +471,9 @@ get_last(
 	if( choices & CHOICE_S )	{
 		last = max( last, sigdict.n );
 	}
+	if( choices & CHOICE_W )	{
+		last = max( last, webdict.n );
+	}
 	if( choices & CHOICE_X )	{
 		last = max( last, x11dict.n );
 	}
@@ -496,6 +513,10 @@ do_list(
 		}
 		if( choices & CHOICE_S )	{
 			de = dict_by_value( &sigdict, e );
+			printf( "\t%-15s",  name_of( de ) );
+		}
+		if( choices & CHOICE_W )	{
+			de = dict_by_value( &webdict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
 		if( choices & CHOICE_X )	{
@@ -565,6 +586,9 @@ main(
 				break;
 			case 's':
 				choices |= CHOICE_S;
+				break;
+			case 'w':
+				choices |= CHOICE_W;
 				break;
 			case 'x':
 				choices |= CHOICE_X;
