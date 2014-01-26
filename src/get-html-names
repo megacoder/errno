@@ -1,6 +1,6 @@
 #!/bin/bash
 ME=$(basename $0)
-USAGE="usage: ${ME} [-o ofile]"
+USAGE="usage: ${ME} [-o ofile] [rfc1945.txt]"
 ofile=
 while getopts o: c; do
 	case "${c}" in
@@ -14,7 +14,13 @@ if [ "${ofile}" ]; then
 	exec >"${ofile}"
 fi
 export LANG=C
-curl -s http://www.ietf.org/rfc/rfc1945.txt				|
+(
+	if [[ $# -gt 0 ]]; then
+		cat "$@"
+	else
+		curl -s http://www.ietf.org/rfc/rfc1945.txt
+	fi
+)									|
 sed -nr -e 's/^.*"([[:digit:]]{3})"[[:space:]]*;[[:space:]]*(.*)$/\1 \2/p' |
 sort -n									|
 awk '
