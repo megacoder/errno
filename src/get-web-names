@@ -53,7 +53,7 @@ $NF >= 2	{
 END	{
 	printf "};\n"
 	print ""
-	printf "dict_t const htmldict =\t{\n"
+	printf "dict_t const webdict =\t{\n"
 	printf "\tnames,\n"
 	printf "\tsizeof(names) / sizeof(names[0])\n"
 	printf "};\n"
