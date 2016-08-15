@@ -49,6 +49,7 @@ BEGIN	{
 END	{
 	printf "};\n"
 	printf "dict_t const x11dict =\t{\n"
+	printf "\t\"X11 Errors\",\n"
 	printf "\tnames,\n"
 	printf "\tsizeof(names)/sizeof(names[0])\n"
 	printf "};\n"

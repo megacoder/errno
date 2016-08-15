@@ -54,6 +54,7 @@ END	{
 	printf "};\n"
 	print ""
 	printf "dict_t const webdict =\t{\n"
+	printf "\t\"Network Sockets\",\n"
 	printf "\tnames,\n"
 	printf "\tsizeof(names) / sizeof(names[0])\n"
 	printf "};\n"

@@ -34,6 +34,7 @@ END	{
 	printf "};\n"
 	printf "\n"
 	printf "dict_t\tconst\tnetdict =\t{\n"
+	printf "\t\"Network\",\n"
 	printf "\tnames,\n"
 	printf "\tsizeof(names)/sizeof(names[0])\n", n
 	printf "};\n"

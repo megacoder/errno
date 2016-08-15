@@ -54,6 +54,8 @@ static	unsigned	nonfatal;
 static	unsigned	sw_l;
 static	poptContext	optCon;
 static	unsigned	choices;
+static	dict_t const *	actions[10];	/* Space for up to 9 choices */
+static	dict_t const * *	next_action = actions;
 
 #define	CHOICE_E	(1 << 0)
 #define	CHOICE_N	(1 << 1)
@@ -404,28 +406,10 @@ explain_term(
 	char const	*	name
 )
 {
-	if( choices & CHOICE_E )	{
-		explain_dict_term( &errdict, name );
-	}
+	dict_t const * *	finger;
 
-	if( choices & CHOICE_N )	{
-		explain_dict_term( &netdict, name );
-	}
-
-	if( choices & CHOICE_P )	{
-		explain_dict_term( &pamdict, name );
-	}
-
-	if( choices & CHOICE_S )	{
-		explain_dict_term( &sigdict, name );
-	}
-
-	if( choices & CHOICE_W )	{
-		explain_dict_term( &webdict, name );
-	}
-
-	if( choices & CHOICE_X )	{
-		explain_dict_term( &x11dict, name );
+	for( finger = actions; *finger; ++finger )	{
+		explain_dict_term( *finger, name );
 	}
 }
 
@@ -485,34 +469,24 @@ do_entry(
 	}
 }
 
+/*
+ *------------------------------------------------------------------------
+ * get_last: find the length of longest dictionary
+ *------------------------------------------------------------------------
+ */
+
 static	int
 get_last(
 	void
 )
 {
 	size_t		last;
+	dict_t const * *	finger;
+
 	last = 0;
-
-	if( choices & CHOICE_E )	{
-		last = max( last, errdict.n );
+	for( finger = actions; *finger; ++finger )	{
+		last = max( last, (*finger)->n );
 	}
-
-	if( choices & CHOICE_P )	{
-		last = max( last, pamdict.n );
-	}
-
-	if( choices & CHOICE_S )	{
-		last = max( last, sigdict.n );
-	}
-
-	if( choices & CHOICE_W )	{
-		last = max( last, webdict.n );
-	}
-
-	if( choices & CHOICE_X )	{
-		last = max( last, x11dict.n );
-	}
-
 	return( last );
 }
 
@@ -536,39 +510,14 @@ do_list(
 
 	for( e = 0; e < last; ++e )	{
 		static const char	notta[] = "";
+		dict_t const * *	finger;
 		dict_entry_t const *	de;
+
 		printf( "%d", e );
-
-		if( choices & CHOICE_E )	{
-			de = dict_by_value( &errdict, e );
-			printf( "\t%-15s",  name_of( de ) );
+		for( finger = actions; *finger; ++finger )	{
+			de = dict_by_value( *finger, e );
+			printf( "\t%-15s", name_of( de ) );
 		}
-
-		if( choices & CHOICE_N )	{
-			de = dict_by_value( &netdict, e );
-			printf( "\t%-15s",  name_of( de ) );
-		}
-
-		if( choices & CHOICE_P )	{
-			de = dict_by_value( &pamdict, e );
-			printf( "\t%-15s",  name_of( de ) );
-		}
-
-		if( choices & CHOICE_S )	{
-			de = dict_by_value( &sigdict, e );
-			printf( "\t%-15s",  name_of( de ) );
-		}
-
-		if( choices & CHOICE_W )	{
-			de = dict_by_value( &webdict, e );
-			printf( "\t%-15s",  name_of( de ) );
-		}
-
-		if( choices & CHOICE_X )	{
-			de = dict_by_value( &x11dict, e );
-			printf( "\t%-15s",  name_of( de ) );
-		}
-
 		printf( "\n" );
 	}
 }
@@ -666,16 +615,35 @@ main(
 			exit( 1 );
 		}
 	} while( 0 );
-
+	/* Push selection actions onto the action stack			 */
+	if( ! choices )	{
+		choices |= ~0U;	/* Default to all tables		 */
+	}
+	if( choices & CHOICE_E )	{
+		*next_action++ = &errdict;
+	}
+	if( choices & CHOICE_N )	{
+		*next_action++ = &netdict;
+	}
+	if( choices & CHOICE_P )	{
+		*next_action++ = &pamdict;
+	}
+	if( choices & CHOICE_S )	{
+		*next_action++ = &sigdict;
+	}
+	if( choices & CHOICE_X )	{
+		*next_action++ = &x11dict;
+	}
+	if( choices & CHOICE_W )	{
+		*next_action++ = &webdict;
+	}
+	*next_action = NULL;
+	/*								 */
 	if( !nonfatal ) do	{
 			size_t const	last = get_last();
 			size_t		e;
 
 			if( sw_l )	{
-				if( !choices )	{
-					choices = ~0U;
-				}
-
 				do_list();
 				break;
 			}

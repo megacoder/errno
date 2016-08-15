@@ -72,6 +72,7 @@ END	{
 	printf "};\n"
 	print ""
 	printf "dict_t const sigdict =\t{\n"
+	printf "\t\"Signal Names\",\n"
 	printf "\tnames,\n"
 	printf "\tsizeof(names) / sizeof(names[0])\n"
 	printf "};\n"

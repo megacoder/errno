@@ -9,6 +9,7 @@ typedef	struct	{
 } dict_entry_t;
 
 typedef	struct	{
+	char const * const		title;
 	dict_entry_t const * const	d;
 	size_t				n;
 } dict_t;

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU errno 1.2.0\n"
+"Project-Id-Version: GNU errno 1.2.1\n"
 "Report-Msgid-Bugs-To: Tommy.Reynolds@MegaCoder.com\n"
-"POT-Creation-Date: 2016-08-14 17:10-0500\n"
+"POT-Creation-Date: 2016-08-15 12:29-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,42 +17,42 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/errno.c:84
+#: src/errno.c:87
 msgid "Treat N as a pam(8) error."
 msgstr ""
 
-#: src/errno.c:93
+#: src/errno.c:96
 msgid "Treat N as a signal value."
 msgstr ""
 
-#: src/errno.c:102
+#: src/errno.c:105
 msgid "Treat N as a errno value."
 msgstr ""
 
-#: src/errno.c:111
+#: src/errno.c:114
 msgid "List a table of all known values"
 msgstr ""
 
-#: src/errno.c:120
+#: src/errno.c:123
 msgid "decode network error values"
 msgstr ""
 
-#: src/errno.c:129
+#: src/errno.c:132
 msgid "decode X11 return values"
 msgstr ""
 
-#: src/errno.c:138
+#: src/errno.c:141
 msgid "decode html web status values"
 msgstr ""
 
-#: src/errno.c:233
+#: src/errno.c:236
 msgid "[UNKNOWN]"
 msgstr ""
 
-#: src/errno.c:239
+#: src/errno.c:242
 msgid "[NO DESCRIPTION]"
 msgstr ""
 
-#: src/errno.c:698
+#: src/errno.c:695
 msgid "Internal prompt buffer too small"
 msgstr ""
