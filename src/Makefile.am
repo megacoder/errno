@@ -1,5 +1,5 @@
 errno_SOURCES	= dict.h errnames.c errno.c gcc-compat.h netnames.c        \
-         signames.c tcp_states.h x11names.c webnames.c
+         signames.c tcp_states.h x11names.c webnames.c pamnames.c
 bin_PROGRAMS	= errno
 EXTRA_DIST	= get-err-names get-x11-names get-net-names get-sig-names \
 		  get-web-names rfc1945.txt

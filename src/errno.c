@@ -9,9 +9,9 @@
  */
 
 #ifdef	HAVE_CONFIG_H
-#  include "../config.h"
+	#include "../config.h"
 #else
-# define PACKAGE "errno"
+	#define PACKAGE "errno"
 #endif /* HAVE_CONFIG_H */
 
 
@@ -36,17 +36,17 @@
 #include "gcc-compat.h"
 
 #if	ENABLE_NLS
-# define	_(x)		gettext( x )
-# define	N_(x)		x
+	#define	_(x)		gettext( x )
+	#define	N_(x)		x
 #else
-# define	_(x)		x
-# define	N_(x)		x
-# define	gettext( x )	x
+	#define	_(x)		x
+	#define	N_(x)		x
+	#define	gettext( x )	x
 #endif
 
 #if	HAVE_LIBREADLINE
-# include <readline/readline.h>
-# include <readline/history.h>
+	#include <readline/readline.h>
+	#include <readline/history.h>
 #endif	/* !HAVE_LIBREADLINE */
 
 static	char const *	me = PACKAGE;
@@ -60,9 +60,11 @@ static	unsigned	choices;
 #define	CHOICE_S	(1 << 2)
 #define	CHOICE_W	(1 << 3)
 #define	CHOICE_X	(1 << 4)
+#define	CHOICE_P	(1 << 5)
 
 extern	dict_t const errdict;
 extern	dict_t const netdict;
+extern	dict_t const pamdict;
 extern	dict_t const sigdict;
 extern	dict_t const webdict;
 extern	dict_t const x11dict;
@@ -75,12 +77,21 @@ extern	dict_t const x11dict;
 
 static	const	struct poptOption	optionsTable[] =	{
 	{
+		"pam",
+		'p',
+		POPT_ARG_NONE,
+		NULL,
+		'p',
+		N_( "Treat N as a pam(8) error." ),
+		NULL
+	},
+	{
 		"signals",
 		's',
 		POPT_ARG_NONE,
 		NULL,
 		's',
-		N_("Treat N as a signal value."),
+		N_( "Treat N as a signal value." ),
 		NULL
 	},
 	{
@@ -89,7 +100,7 @@ static	const	struct poptOption	optionsTable[] =	{
 		POPT_ARG_NONE,
 		NULL,
 		'e',
-		N_("Treat N as a errno value."),
+		N_( "Treat N as a errno value." ),
 		NULL
 	},
 	{
@@ -98,7 +109,7 @@ static	const	struct poptOption	optionsTable[] =	{
 		POPT_ARG_NONE,
 		NULL,
 		'l',
-		N_("List a table of all known values"),
+		N_( "List a table of all known values" ),
 		NULL
 	},
 	{
@@ -107,7 +118,7 @@ static	const	struct poptOption	optionsTable[] =	{
 		POPT_ARG_NONE,
 		NULL,
 		'n',
-		N_("decode network error values"),
+		N_( "decode network error values" ),
 		NULL
 	},
 	{
@@ -116,7 +127,7 @@ static	const	struct poptOption	optionsTable[] =	{
 		POPT_ARG_NONE,
 		NULL,
 		'x',
-		N_("decode X11 return values"),
+		N_( "decode X11 return values" ),
 		NULL
 	},
 	{
@@ -125,7 +136,7 @@ static	const	struct poptOption	optionsTable[] =	{
 		POPT_ARG_NONE,
 		NULL,
 		'w',
-		N_("decode html web status values"),
+		N_( "decode html web status values" ),
 		NULL
 	},
 	POPT_AUTOHELP
@@ -138,7 +149,7 @@ static	const	struct poptOption	optionsTable[] =	{
  *------------------------------------------------------------------------
  */
 
-static	void _printf(3,4)
+static	void _printf( 3, 4 )
 usage(
 	poptContext		optCon,
 	int			e,
@@ -147,23 +158,25 @@ usage(
 )
 {
 	poptPrintUsage( optCon, stderr, 0 );
+
 	if( fmt )	{
 		va_list		ap;
-
 		fprintf( stderr, "%s: ", me );
 		va_start( ap, fmt );
 		vfprintf( stderr, fmt, ap );
 		va_end( ap );
+
 		if( e )	{
 			fprintf( stderr, "; errno=%d (%s)", e, strerror( e ) );
 		}
+
 		fprintf( stderr, "\n" );
 	}
 }
 
 static	int		_printf( 3, 4 )
 snprintf_ellipsis(
-	char *		buf,
+	char	*	buf,
 	size_t		size,
 	char const *	fmt,
 	...
@@ -171,15 +184,15 @@ snprintf_ellipsis(
 {
 	va_list		ap;
 	size_t		needed;
-
 	va_start( ap, fmt );
 	needed = vsnprintf( buf, size, fmt, ap );
 	va_end( ap );
+
 	if( needed >= size )	{
 		static	char const	ellipsis[] = "...";
-
 		strcpy( buf + size - sizeof( ellipsis ), ellipsis );
 	}
+
 	return( needed );
 }
 
@@ -190,16 +203,17 @@ report_dict_entry(
 	dict_entry_t const *	de
 )
 {
-	char *		leadin;
+	char	*	leadin;
 	char		number[ 31 ];
 	char		title[ 21 ];
-
 	assert( de /* No dict_entry to decode */ );
+
 	if( minus )	{
 		leadin = "-";
 	} else	{
 		leadin = "";
 	}
+
 	if( e == INT_MIN )	{
 		number[ 0 ] = '\0';
 	} else	{
@@ -211,6 +225,7 @@ report_dict_entry(
 			e
 		);
 	}
+
 	snprintf_ellipsis(
 		title,
 		sizeof( title ),
@@ -228,8 +243,8 @@ report_dict_entry(
 
 static	dict_entry_t const *
 dict_by_name(
-	dict_t const *		dict,
-	char const *		name
+	dict_t const	*	dict,
+	char const	*	name
 )
 {
 	static	dict_entry_t const	none = {
@@ -237,27 +252,29 @@ dict_by_name(
 		NULL
 	};
 	dict_entry_t const *	retval;
-
 	retval = NULL;
+
 	do	{
 		dict_entry_t const *	de;
 
 		if( !name )	{
 			break;
 		}
-		for( de = dict->d; de < (dict->d+dict->n); ++de )	{
+
+		for( de = dict->d; de < ( dict->d + dict->n ); ++de )	{
 			if( de->name && !strcasecmp( name, de->name ) ) {
 				retval = de;
 				break;
 			}
 		}
 	} while( 0 );
+
 	return( retval );
 }
 
 static	dict_entry_t const *
 dict_by_value(
-	dict_t const *		dict,
+	dict_t const	*	dict,
 	int const		e	/* Always positive		 */
 )
 {
@@ -266,8 +283,8 @@ dict_by_value(
 		NULL
 	};
 	dict_entry_t const *	retval;
-
 	retval = &none;
+
 	do	{
 		if( e < dict->n )	{
 			dict_entry_t const *	de = dict->d + e;
@@ -278,34 +295,35 @@ dict_by_value(
 			}
 		}
 	} while( 0 );
+
 	return( retval );
 }
 
 static	int
 explain_dict_term(
 	dict_t const * const	dict,
-	char const *		name
+	char const	*	name
 )
 {
 	int			retval;
-
 	retval = 1;
+
 	do	{
 		dict_entry_t const *	de;
-		char const *		desc;
+		char const	*	desc;
 		int			c;
 		int			minus;
-
 		de = NULL;
-		if( (name[0] & 0xFF) == '-' )	{
+
+		if( ( name[0] & 0xFF ) == '-' )	{
 			minus = 1;
 			++name;
 		} else	{
 			minus = 0;
 		}
+
 		if( isdigit( name[0] ) )	{
 			int		e;
-
 			e = atoi( name );
 			de = dict_by_value( dict, e );
 			report_dict_entry(
@@ -321,10 +339,12 @@ explain_dict_term(
 				de
 			);
 		}
+
 		if( de )	{
 			retval = 0;
 		}
 	} while( 0 );
+
 	return( retval );
 }
 
@@ -335,15 +355,15 @@ name_from_value(
 )
 {
 	char const *	retval;
-
 	retval = NULL;
+
 	do	{
 		if( e < dict->n )	{
 			dict_entry_t const * const	de = dict->d + e;
-
 			retval = de->name;
 		}
 	} while( 0 );
+
 	return( retval );
 }
 
@@ -354,9 +374,9 @@ value_from_name(
 	size_t * const		ep
 )
 {
-	char const *		retval;
-
+	char const	*	retval;
 	retval = NULL;
+
 	do	{
 		int		i;
 
@@ -371,6 +391,7 @@ value_from_name(
 			}
 		}
 	} while( 0 );
+
 	return( retval );
 }
 
@@ -380,21 +401,29 @@ value_from_name(
 
 static	void
 explain_term(
-	char const *		name
+	char const	*	name
 )
 {
 	if( choices & CHOICE_E )	{
 		explain_dict_term( &errdict, name );
 	}
+
 	if( choices & CHOICE_N )	{
 		explain_dict_term( &netdict, name );
 	}
+
+	if( choices & CHOICE_P )	{
+		explain_dict_term( &pamdict, name );
+	}
+
 	if( choices & CHOICE_S )	{
 		explain_dict_term( &sigdict, name );
 	}
+
 	if( choices & CHOICE_W )	{
 		explain_dict_term( &webdict, name );
 	}
+
 	if( choices & CHOICE_X )	{
 		explain_dict_term( &x11dict, name );
 	}
@@ -413,19 +442,21 @@ readline(
 )
 {
 	static size_t const	len = BUFSIZ + 1;
-	char *		result;
-
+	char	*	result;
 	result = malloc( len );
+
 	if( result )	{
 		if( prompt && prompt[0] )	{
 			printf( "%s", prompt );
 			fflush( stdout );
 		}
+
 		if( !fgets( result, len, stdin ) )	{
 			free( result );
 			result = NULL;
 		}
 	}
+
 	return( result );
 }
 
@@ -460,23 +491,28 @@ get_last(
 )
 {
 	size_t		last;
-
 	last = 0;
+
 	if( choices & CHOICE_E )	{
 		last = max( last, errdict.n );
 	}
-	if( choices & CHOICE_N )	{
-		last = max( last, netdict.n );
+
+	if( choices & CHOICE_P )	{
+		last = max( last, pamdict.n );
 	}
+
 	if( choices & CHOICE_S )	{
 		last = max( last, sigdict.n );
 	}
+
 	if( choices & CHOICE_W )	{
 		last = max( last, webdict.n );
 	}
+
 	if( choices & CHOICE_X )	{
 		last = max( last, x11dict.n );
 	}
+
 	return( last );
 }
 
@@ -501,28 +537,38 @@ do_list(
 	for( e = 0; e < last; ++e )	{
 		static const char	notta[] = "";
 		dict_entry_t const *	de;
-
 		printf( "%d", e );
+
 		if( choices & CHOICE_E )	{
 			de = dict_by_value( &errdict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
+
 		if( choices & CHOICE_N )	{
 			de = dict_by_value( &netdict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
+
+		if( choices & CHOICE_P )	{
+			de = dict_by_value( &pamdict, e );
+			printf( "\t%-15s",  name_of( de ) );
+		}
+
 		if( choices & CHOICE_S )	{
 			de = dict_by_value( &sigdict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
+
 		if( choices & CHOICE_W )	{
 			de = dict_by_value( &webdict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
+
 		if( choices & CHOICE_X )	{
 			de = dict_by_value( &x11dict, e );
 			printf( "\t%-15s",  name_of( de ) );
 		}
+
 		printf( "\n" );
 	}
 }
@@ -540,14 +586,15 @@ main(
 )
 {
 	do	{
-		char *		bp;
+		char	*	bp;
 		int		c;
-
 		/* Figure out our process name				*/
 		me = argv[ 0 ];
-		if( (bp = strrchr( me, '/' )) != NULL )	{
+
+		if( ( bp = strrchr( me, '/' ) ) != NULL )	{
 			me = bp + 1;
 		}
+
 #if	ENABLE_NLS
 		setlocale( LC_ALL, "" );
 		bindtextdomain( PACKAGE, LOCALEDIR );
@@ -555,46 +602,59 @@ main(
 #endif	/* ENABLE_NLS */
 		/* Process command line switches via popt		 */
 		optCon = poptGetContext(
-			NULL,
-			argc,
-			argv,
-			optionsTable,
-			0
-		);
+				 NULL,
+				 argc,
+				 argv,
+				 optionsTable,
+				 0
+			 );
 		poptSetOtherOptionHelp( optCon, "<id/number> .." );
-		while( (c = poptGetNextOpt( optCon )) >= 0 )	{
+
+		while( ( c = poptGetNextOpt( optCon ) ) >= 0 )	{
 			switch( c )	{
-			default:
-				if( isalnum(c) | ispunct(c)
-				)	{
-					printf("Unknown switch -%c\n", c );
-				} else	{
-					printf(
-						"Unknown switch c=0x%02X\n",
-						c
-					);
-				}
-				break;
-			case 'e':
-				choices |= CHOICE_E;
-				break;
-			case 'l':
-				++sw_l;
-				break;
-			case 'n':
-				choices |= CHOICE_N;
-				break;
-			case 's':
-				choices |= CHOICE_S;
-				break;
-			case 'w':
-				choices |= CHOICE_W;
-				break;
-			case 'x':
-				choices |= CHOICE_X;
-				break;
+				default:
+					if( isalnum( c ) | ispunct( c )
+					  )	{
+						printf( "Unknown switch -%c\n", c );
+					} else	{
+						printf(
+							"Unknown switch c=0x%02X\n",
+							c
+						);
+					}
+
+					break;
+
+				case 'e':
+					choices |= CHOICE_E;
+					break;
+
+				case 'l':
+					++sw_l;
+					break;
+
+				case 'n':
+					choices |= CHOICE_N;
+					break;
+
+				case 'p':
+					choices |= CHOICE_P;
+					break;
+
+				case 's':
+					choices |= CHOICE_S;
+					break;
+
+				case 'w':
+					choices |= CHOICE_W;
+					break;
+
+				case 'x':
+					choices |= CHOICE_X;
+					break;
 			}
 		}
+
 		if( c < -1 )	{
 			usage(
 				optCon,
@@ -606,85 +666,97 @@ main(
 			exit( 1 );
 		}
 	} while( 0 );
+
 	if( !nonfatal ) do	{
-		size_t const	last = get_last();
-		size_t		e;
+			size_t const	last = get_last();
+			size_t		e;
 
-		if( sw_l )	{
+			if( sw_l )	{
+				if( !choices )	{
+					choices = ~0U;
+				}
+
+				do_list();
+				break;
+			}
+
 			if( !choices )	{
-				choices = ~0U;
+				choices |= CHOICE_E;
 			}
-			do_list();
-			break;
-		}
-		if( !choices )	{
-			choices |= CHOICE_E;
-		}
-		/* Process command line arguments, if any	 */
-		if(poptPeekArg( optCon ) )	{
-			/* More arguments remaining		 */
-			char const *	name;
 
-			while( (name = poptGetArg( optCon )) != NULL ) {
-				explain_term( name );
-			}
-		} else	{
-			int const	interactive = isatty(fileno( stdin ) );
-			char		prompt[ BUFSIZ + 1 ];
-			size_t		needed;
+			/* Process command line arguments, if any	 */
+			if( poptPeekArg( optCon ) )	{
+				/* More arguments remaining		 */
+				char const *	name;
 
-			/* Build prompt, even if we don't need it */
-			needed = snprintf(
-				prompt,
-				sizeof( prompt ),
-				"%s> ",
-				me
-			);
-			prompt[ DIM( prompt ) - 1 ] = '\0';
-			if( needed >= sizeof( prompt ) )	{
-				fprintf(
-					stderr,
-					"%s: %s\n",
-					_( "Internal prompt buffer too small" )
-				);
-				exit( 1 );
-				/* NOTREACHED			 */
-			}
-			/* Get an process each stdin line	 */
-			while(!feof( stdin ) )	{
-				char * const	line = readline(
-					interactive ? prompt: NULL
-				);
-				char *		name;
-				char *		lp;
-
-				/* Recognize EOF		 */
-				if( !line )	{
-					if( interactive )	{
-						printf( "\n[EOF]\n" );
-					}
-					break;
-				}
-				if( interactive )	{
-					add_history( line );
-				}
-				/* Drop comments		 */
-				lp = strchr( line, '#' );
-				if( lp )	{
-					*lp = '\0';
-				}
-				/* Explain remaining tokens	 */
-				for(
-					lp = line;
-					( name = strtok( lp, " \t\n" )) != NULL;
-					lp = NULL
-				)	{
+				while( ( name = poptGetArg( optCon ) ) != NULL ) {
 					explain_term( name );
 				}
-				/* Discard the line, we're done	 */
-				free( line );
+			} else	{
+				int const	interactive = isatty( fileno( stdin ) );
+				char		prompt[ BUFSIZ + 1 ];
+				size_t		needed;
+				/* Build prompt, even if we don't need it */
+				needed = snprintf(
+						 prompt,
+						 sizeof( prompt ),
+						 "%s> ",
+						 me
+					 );
+				prompt[ DIM( prompt ) - 1 ] = '\0';
+
+				if( needed >= sizeof( prompt ) )	{
+					fprintf(
+						stderr,
+						"%s: %s\n",
+						_( "Internal prompt buffer too small" )
+					);
+					exit( 1 );
+					/* NOTREACHED			 */
+				}
+
+				/* Get an process each stdin line	 */
+				while( !feof( stdin ) )	{
+					char * const	line = readline(
+								       interactive ? prompt : NULL
+							       );
+					char	*	name;
+					char	*	lp;
+
+					/* Recognize EOF		 */
+					if( !line )	{
+						if( interactive )	{
+							printf( "\n[EOF]\n" );
+						}
+
+						break;
+					}
+
+					if( interactive )	{
+						add_history( line );
+					}
+
+					/* Drop comments		 */
+					lp = strchr( line, '#' );
+
+					if( lp )	{
+						*lp = '\0';
+					}
+
+					/* Explain remaining tokens	 */
+					for(
+						lp = line;
+						( name = strtok( lp, " \t\n" ) ) != NULL;
+						lp = NULL
+					)	{
+						explain_term( name );
+					}
+
+					/* Discard the line, we're done	 */
+					free( line );
+				}
 			}
-		}
-	} while( 0 );
+		} while( 0 );
+
 	return( nonfatal ? 1 : 0 );
 }
