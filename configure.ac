@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([errno], [1.2.1], [Tommy.Reynolds@MegaCoder])
+AC_INIT([errno], [1.2.1], [oldest.software.guy@gmail.com])
 AC_CONFIG_SRCDIR([gettext.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
@@ -19,8 +19,7 @@ AC_PROG_MAKE_SET
 LT_INIT
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lpopt':
-AC_CHECK_LIB([popt], [main])
+AC_CHECK_LIB([popt], [poptGetNextOpt])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
