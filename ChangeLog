@@ -1,1 +1,292 @@
-2010-03-20  gettextize  <bug-gnu-gettext@gnu.org>
+2016-08-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Bumped version number
+
+2016-08-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* errno.1: Described the "-p" switch to show pam(8) error codes.
+
+2016-08-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/en_US.po, po/errno.pot, src/Makefile.am, src/errno.c: Added
+	support for "-p" to show PAM return codes.
+
+2016-08-14  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/pamnames.c: Build PAM result recoder ring.
+
+2014-02-24  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* bootstrap.sh: Local directory RPM build
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* README.md: Updated description with all the built-in error
+	knowledge.
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* errno.1, po/en_US.po, po/errno.pot: Documented '-w' and '--web'
+	switch.
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: 1.2.0
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/en_US.po, po/errno.pot, src/Makefile.am, src/get-html-names,
+	src/get-web-names: Renamed to better fit 3-char prefixes
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errno.c: Added '-w" or "--web" switch.
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-html-names: Now, we can avoid web access by including the
+	RFC file.
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/Makefile.am: Include HTML generators
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/rfc1945.txt: RFC1945 Hypertext Transfer Protocol -- HTTP/1.0
+
+2014-01-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-html-names: Compose HTML response codes by looking at the
+	RFC1945 content.  Note: as written this requires web access.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* bootstrap.sh: Executable
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Now handles '-s' or '--signal' options.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errno.c: Accept the options.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errno.c: Added '-s' signal decoder.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errno.c: Checkpoint
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-sig-names: Proper numeric indexes
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-sig-names: Need signals.h to resolve the names, dummy.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/Makefile.am: Name'em to make'em
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/en_US.po, po/errno.pot, src/Makefile.am: Generate table of
+	signal names.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-sig-names: Parse enough to get signal names.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Cleaned up generated code files.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errnames.c, src/netnames.c: Don't archive generated files.
+
+2014-01-02  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errnames.c, src/get-err-names, src/get-net-names,
+	src/get-x11-names, src/netnames.c: Use subscripts to poke into array
+
+2013-12-10  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-err-names: Generate table with the right name, chum!
+
+2013-12-10  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* bootstrap.sh: Gotta start somehow
+
+2013-10-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Bumped version.
+
+2013-10-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errno.c: Decode errno values by default.
+
+2013-10-14  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/en_US.po, po/errno.pot: Checkpoint
+
+2013-10-14  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac, po/en_US.po, po/errno.pot, src/errno.c,
+	src/get-net-names, src/netnames.c: Greatly simplified logic.
+
+2013-10-14  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errno.c: Changing style
+
+2013-10-12  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac, src/errno.c, src/get-net-names, src/netnames.c: 
+	Redid the processing to make the "-a" switch cleaner.
+
+2013-09-11  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* errno.spec.in: Fixed BuildRequires
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/en_US.po, po/errno.pot: Translations
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Bumped
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* errno.1, src/errno.c: Removed -a crash
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Makefile.am, errno.spec.in: Man(1) page added and installed, sir!
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Makefile.am, configure.ac: Modernized, works better
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* README: Gotta have it!
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* errno.spec.in: Try to get man(1) page installed
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Makefile.am: Added errno.1 to manifest.
+
+2013-09-07  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* errno.1: At least the genesis of a man(1) page.
+
+2013-09-06  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Grumbles about compile flags removed.
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Makefile.am, src/Makefile.am, src/netnames.c: Checkpoint
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-net-names: Public
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-net-names: Use proper array name.
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Makefile.am, configure.ac, errno.spec.in, po/en_US.po,
+	po/errno.pot, src/Makefile.am, src/get-net-names, src/netnames.c,
+	src/tcp_states.h: Generate network state names.
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/get-net-names: Network states
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/Makefile.am: Build right X11 helper.
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Intl
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* autogen.sh: Goner.
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: More progress.
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Checkpoint
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Makefile.am: Include "intl" directory.
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* autogen.sh: Create m4 directory
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Makefile.am: PO fixes, may not be needed though.
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* autogen.sh, configure.ac: Working,maybe
+
+2013-07-26  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/LINGUAS: Languages
+
+2013-07-25  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Gettext
+
+2013-07-25  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Makefile.am: Extra targets for gettext
+
+2013-07-25  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* INSTALL: goner
+
+2013-07-25  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* bootstrap.sh: Goner
+
+2013-07-25  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* autogen.sh: goner
+
+2013-07-25  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* INSTALL, configure.ac, po/Makefile.am: No Makefile.in.in
+
+2013-05-12  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/Makefile.am: howto
+
+2013-02-24  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* README.md: Pre-formatted block.
+
+2013-02-24  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* Brought in from private repo.
+
