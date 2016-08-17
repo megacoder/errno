@@ -30,6 +30,7 @@
 #include <popt.h>
 #include <locale.h>
 #include <assert.h>
+#include <string.h>
 
 #include "dict.h"
 
@@ -199,22 +200,14 @@ snprintf_ellipsis(
 }
 
 static	void
-report_dict_entry(
-	int const		minus,	/* Originally had '-' prefix	 */
+print_de_all(
 	int const		e,
 	dict_entry_t const *	de
 )
 {
-	char	*	leadin;
 	char		number[ 31 ];
 	char		title[ 21 ];
 	assert( de /* No dict_entry to decode */ );
-
-	if( minus )	{
-		leadin = "-";
-	} else	{
-		leadin = "";
-	}
 
 	if( e == INT_MIN )	{
 		number[ 0 ] = '\0';
@@ -222,8 +215,7 @@ report_dict_entry(
 		snprintf_ellipsis(
 			number,
 			sizeof( number ),
-			"%s%d",
-			leadin,
+			"%d",
 			e
 		);
 	}
@@ -231,8 +223,7 @@ report_dict_entry(
 	snprintf_ellipsis(
 		title,
 		sizeof( title ),
-		"%s%s",
-		leadin,
+		"%s",
 		de->name ? de->name : _( "[UNKNOWN]" )
 	);
 	printf(
@@ -244,7 +235,7 @@ report_dict_entry(
 }
 
 static	dict_entry_t const *
-dict_by_name(
+name_to_de(
 	dict_t const	*	dict,
 	char const	*	name
 )
@@ -275,130 +266,44 @@ dict_by_name(
 }
 
 static	dict_entry_t const *
-dict_by_value(
-	dict_t const	*	dict,
-	int const		e	/* Always positive		 */
-)
-{
-	static dict_entry_t const	none =	{
-		NULL,
-		NULL
-	};
-	dict_entry_t const *	retval;
-	retval = &none;
-
-	do	{
-		if( e < dict->n )	{
-			dict_entry_t const *	de = dict->d + e;
-
-			if( de->name )	{
-				retval = de;
-				break;
-			}
-		}
-	} while( 0 );
-
-	return( retval );
-}
-
-static	int
-explain_dict_term(
-	dict_t const * const	dict,
-	char const	*	name
-)
-{
-	int			retval;
-	retval = 1;
-
-	do	{
-		dict_entry_t const *	de;
-		char const	*	desc;
-		int			c;
-		int			minus;
-		de = NULL;
-
-		if( ( name[0] & 0xFF ) == '-' )	{
-			minus = 1;
-			++name;
-		} else	{
-			minus = 0;
-		}
-
-		if( isdigit( name[0] ) )	{
-			int		e;
-			e = atoi( name );
-			de = dict_by_value( dict, e );
-			report_dict_entry(
-				minus,
-				e,
-				de
-			);
-		} else	{
-			de = dict_by_name( dict, name );
-			report_dict_entry(
-				minus,
-				de ? de - dict->d : INT_MIN,
-				de
-			);
-		}
-
-		if( de )	{
-			retval = 0;
-		}
-	} while( 0 );
-
-	return( retval );
-}
-
-static	char const *
-name_from_value(
+value_to_de(
 	dict_t const * const	dict,
 	size_t			e	/* Always positive		 */
 )
 {
-	char const *	retval;
-	retval = NULL;
+	dict_entry_t const *	retval;
 
+	retval = NULL;
 	do	{
 		if( e < dict->n )	{
-			dict_entry_t const * const	de = dict->d + e;
-			retval = de->name;
+			retval = dict->d + e;
 		}
 	} while( 0 );
 
 	return( retval );
 }
 
-static	char const *
-value_from_name(
+static	void
+explain_de(
 	dict_t const * const	dict,
-	char const * const	name,
-	size_t * const		ep
+	dict_entry_t const *	de
 )
 {
-	char const	*	retval;
-	retval = NULL;
+	if( de ) do	{
+		char const	*	desc;
+		int			c;
 
-	do	{
-		int		i;
-
-		for( i = 0; i < dict->n; ++i )	{
-			dict_entry_t const * const	de = dict->d + i;
-			// char const * const	s = names[ i ];
-
-			if( !strcasecmp( name, de->name ? : "<>" ) )	{
-				retval = de->name;
-				*ep = i;
-				break;
-			}
-		}
+		print_de_all(
+			de ? de - dict->d : INT_MIN,
+			de
+		);
 	} while( 0 );
-
-	return( retval );
 }
 
 /*
- * explain_term: lookup errno and write its value
+ *------------------------------------------------------------------------
+ * explain_term: lookup errno and write its value, from any dictionary
+ *------------------------------------------------------------------------
  */
 
 static	void
@@ -406,10 +311,14 @@ explain_term(
 	char const	*	name
 )
 {
-	dict_t const * *	finger;
+	dict_t const * *	dict_addr;
 
-	for( finger = actions; *finger; ++finger )	{
-		explain_dict_term( *finger, name );
+	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
+		dict_entry_t const * const	de = name_to_de(
+			*dict_addr,
+			name
+		);
+		explain_de( *dict_addr, de );
 	}
 }
 
@@ -454,24 +363,8 @@ add_history(
 #endif	/* !HAVE_LIBREADLINE */
 
 /*
- */
-
-static	void
-do_entry(
-	dict_t const * const	dict,
-	int const		e
-)
-{
-	char const * const	name = name_from_value( dict, e );
-
-	if( name )	{
-		explain_dict_term( dict, name );
-	}
-}
-
-/*
  *------------------------------------------------------------------------
- * get_last: find the length of longest dictionary
+ * get_last: find the length of the longest active dictionary
  *------------------------------------------------------------------------
  */
 
@@ -480,22 +373,22 @@ get_last(
 	void
 )
 {
-	size_t		last;
-	dict_t const * *	finger;
+	size_t			last;
+	dict_t const * *	dict_addr;
 
 	last = 0;
-	for( finger = actions; *finger; ++finger )	{
-		last = max( last, (*finger)->n );
+	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
+		last = max( last, (*dict_addr)->n );
 	}
 	return( last );
 }
 
 static	char const *
-name_of(
+de_to_name(
 	dict_entry_t const * const	de
 )
 {
-	char const *	s = de ? de->name : NULL;
+	char const *	s = de ? de->name : "";
 	return( s ? s : "" );
 }
 
@@ -504,19 +397,34 @@ do_list(
 	void
 )
 {
-	char const	notta[] = "_______________";
-	size_t const	last = get_last();
-	size_t		e;
+	static char const	fmt[] = "\t%-*.*s";
+	static size_t const	width = 23;
+	char const		bars[] = "______________________________";
+	size_t const		last = get_last();
+	size_t			e;
+	dict_t const * *	dict_addr;
 
+	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
+		printf( fmt, width, width, (*dict_addr)->title );
+	}
+	printf( "\n" );
+	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
+		size_t const	len = min(
+			width - 1,
+			strlen( (*dict_addr)->title )
+		 );
+		printf( fmt, len, len, bars );
+	}
+	printf( "\n" );
+	printf( "\n" );
 	for( e = 0; e < last; ++e )	{
 		static const char	notta[] = "";
-		dict_t const * *	finger;
 		dict_entry_t const *	de;
 
 		printf( "%d", e );
-		for( finger = actions; *finger; ++finger )	{
-			de = dict_by_value( *finger, e );
-			printf( "\t%-15s", name_of( de ) );
+		for( dict_addr = actions; *dict_addr; ++dict_addr )	{
+			de = value_to_de( *dict_addr, e );
+			printf( fmt, width, width, de_to_name( de ) );
 		}
 		printf( "\n" );
 	}

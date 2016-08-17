@@ -55,6 +55,7 @@ static dict_entry_t const	names[] =	{
 };
 
 dict_t	const	pamdict =	{
+	"PAM Returns",
 	names,
 	sizeof(names)/sizeof(names[0])
 };

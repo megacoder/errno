@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: errno 0.0.0\n"
 "Report-Msgid-Bugs-To: Tommy.Reynolds@MegaCoder.com\n"
-"POT-Creation-Date: 2016-08-15 12:29-0500\n"
+"POT-Creation-Date: 2016-08-15 13:06-0500\n"
 "PO-Revision-Date: 2010-03-20 11:39-0500\n"
 "Last-Translator: Tommy Reynolds <reynolds@quadimodo.darkzone.un>\n"
 "Language-Team: English\n"
@@ -56,7 +56,7 @@ msgstr "[UNKNOWN]"
 msgid "[NO DESCRIPTION]"
 msgstr "[NO DESCRIPTION]"
 
-#: src/errno.c:695
+#: src/errno.c:680
 msgid "Internal prompt buffer too small"
 msgstr "Internal prompt buffer too small"
 
