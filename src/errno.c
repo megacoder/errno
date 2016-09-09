@@ -240,10 +240,6 @@ name_to_de(
 	char const	*	name
 )
 {
-	static	dict_entry_t const	none = {
-		NULL,
-		NULL
-	};
 	dict_entry_t const *	retval;
 	retval = NULL;
 
@@ -290,9 +286,6 @@ explain_de(
 )
 {
 	if( de ) do	{
-		char const	*	desc;
-		int			c;
-
 		print_de_all(
 			de ? de - dict->d : INT_MIN,
 			de
@@ -405,7 +398,7 @@ do_list(
 	dict_t const * *	dict_addr;
 
 	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
-		printf( fmt, width, width, (*dict_addr)->title );
+		printf( fmt, (int) width, (int) width, (*dict_addr)->title );
 	}
 	printf( "\n" );
 	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
@@ -413,18 +406,17 @@ do_list(
 			width - 1,
 			strlen( (*dict_addr)->title )
 		 );
-		printf( fmt, len, len, bars );
+		printf( fmt, (int) len, (int) len, bars );
 	}
 	printf( "\n" );
 	printf( "\n" );
 	for( e = 0; e < last; ++e )	{
-		static const char	notta[] = "";
 		dict_entry_t const *	de;
 
-		printf( "%d", e );
+		printf( "%d", (int) e );
 		for( dict_addr = actions; *dict_addr; ++dict_addr )	{
 			de = value_to_de( *dict_addr, e );
-			printf( fmt, width, width, de_to_name( de ) );
+			printf( fmt, (int) width, (int) width, de_to_name( de ) );
 		}
 		printf( "\n" );
 	}
@@ -548,9 +540,6 @@ main(
 	*next_action = NULL;
 	/*								 */
 	if( !nonfatal ) do	{
-			size_t const	last = get_last();
-			size_t		e;
-
 			if( sw_l )	{
 				do_list();
 				break;
@@ -585,6 +574,7 @@ main(
 					fprintf(
 						stderr,
 						"%s: %s\n",
+						me,
 						_( "Internal prompt buffer too small" )
 					);
 					exit( 1 );
