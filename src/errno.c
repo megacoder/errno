@@ -31,6 +31,7 @@
 #include <locale.h>
 #include <assert.h>
 #include <string.h>
+#include <errno.h>
 
 #include "dict.h"
 
@@ -53,6 +54,7 @@
 static	char const *	me = PACKAGE;
 static	unsigned	nonfatal;
 static	unsigned	sw_l;
+static	int		debug_level;
 static	poptContext	optCon;
 static	unsigned	choices;
 static	dict_t const *	actions[10];	/* Space for up to 9 choices */
@@ -79,6 +81,24 @@ extern	dict_t const x11dict;
  */
 
 static	const	struct poptOption	optionsTable[] =	{
+	{
+		"debug",
+		'D',
+		POPT_ARG_NONE,
+		NULL,
+		'D',
+		N_( "Debug chattiness level." ),
+		NULL
+	},
+	{
+		"all",
+		'a',
+		POPT_ARG_NONE,
+		NULL,
+		'a',
+		N_( "No seleciton implies all error classes." ),
+		NULL
+	},
 	{
 		"pam",
 		'p',
@@ -145,6 +165,40 @@ static	const	struct poptOption	optionsTable[] =	{
 	POPT_AUTOHELP
 	POPT_TABLEEND
 };
+
+/*
+ *------------------------------------------------------------------------
+ * debug: conditionally print debug information
+ *------------------------------------------------------------------------
+ */
+
+static void _printf(3,4) _pure
+debug(
+	int const		min_level,
+	int const		e,
+	char const * const	fmt,
+	...
+)
+{
+	if( debug_level >= min_level )	{
+		va_list		ap;
+
+		fprintf( stderr, "%s: ", me );
+		va_start( ap, fmt );
+		vfprintf( stderr, fmt, ap );
+		va_end( ap );
+		if( e )	{
+			fprintf(
+				stderr,
+				"; errno=%d(%s)",
+				e,
+				strerror(e)
+			);
+		}
+		fprintf( stderr, "\n" );
+	}
+}
+
 
 /*
  *------------------------------------------------------------------------
@@ -297,6 +351,9 @@ explain_de(
  *------------------------------------------------------------------------
  * explain_term: lookup errno and write its value, from any dictionary
  *------------------------------------------------------------------------
+ * If "name" begins with a digit, return the name associated with the
+ * number, else search by name.
+ *------------------------------------------------------------------------
  */
 
 static	void
@@ -306,12 +363,42 @@ explain_term(
 {
 	dict_t const * *	dict_addr;
 
-	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
-		dict_entry_t const * const	de = name_to_de(
-			*dict_addr,
-			name
-		);
-		explain_de( *dict_addr, de );
+	if( isdigit( name[0] ) )	{
+		char *		eos;
+		unsigned long	k;
+
+		k = strtoul( name, &eos, 10 );
+		if( *eos )	{
+			fprintf(
+				stderr,
+				"%s: not fully numeric (%s)\n",
+				me,
+				name
+			);
+		}
+		printf( "%s", name );
+		for( dict_addr = actions; *dict_addr; ++dict_addr )	{
+			if( k < (*dict_addr)->n )	{
+				dict_entry_t const * const	de =
+					(*dict_addr)->d + k;
+				if( de->name )	{
+					printf(
+						"\t%s\t%s",
+						de->name,
+						de->desc
+					);
+				}
+			}
+		}
+		printf( "\n" );
+	} else	{
+		for( dict_addr = actions; *dict_addr; ++dict_addr )	{
+			dict_entry_t const * const	de = name_to_de(
+				*dict_addr,
+				name
+			);
+			explain_de( *dict_addr, de );
+		}
 	}
 }
 
@@ -385,38 +472,49 @@ de_to_name(
 	return( s ? s : "" );
 }
 
+/*
+ *------------------------------------------------------------------------
+ * show_the_matrix: display the number .vs. name table
+ *------------------------------------------------------------------------
+ */
+
 static	void
-do_list(
+show_the_matrix(
 	void
 )
 {
-	static char const	fmt[] = "\t%-*.*s";
-	static size_t const	width = 23;
+	static char const	fmt[] = "\t%-15.15s";
 	char const		bars[] = "______________________________";
 	size_t const		last = get_last();
 	size_t			e;
 	dict_t const * *	dict_addr;
 
+	debug( 1, 0, "%d entries in longest list", last );
+	/* Bang out the column titles					 */
+	printf( "%7.7s", "Value" );
 	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
-		printf( fmt, (int) width, (int) width, (*dict_addr)->title );
+		printf( fmt, (*dict_addr)->title );
 	}
 	printf( "\n" );
+	/* Print a row of bars below the titles				 */
+	printf( "%7.7s", bars );
 	for( dict_addr = actions; *dict_addr; ++dict_addr )	{
-		size_t const	len = min(
-			width - 1,
-			strlen( (*dict_addr)->title )
-		 );
-		printf( fmt, (int) len, (int) len, bars );
+		printf( fmt, bars );
 	}
 	printf( "\n" );
+	/* Blank line after the titles and bars				 */
 	printf( "\n" );
+	/* Now, for each possible value, show names for it		 */
 	for( e = 0; e < last; ++e )	{
 		dict_entry_t const *	de;
 
-		printf( "%d", (int) e );
+		printf( "%7d", (int) e );
 		for( dict_addr = actions; *dict_addr; ++dict_addr )	{
+			char const *	s;
+
 			de = value_to_de( *dict_addr, e );
-			printf( fmt, (int) width, (int) width, de_to_name( de ) );
+			s = de ? de_to_name( de ) : "";
+			printf( fmt, s );
 		}
 		printf( "\n" );
 	}
@@ -458,7 +556,7 @@ main(
 				 0
 			 );
 		poptSetOtherOptionHelp( optCon, "<id/number> .." );
-
+		/* Interpret the selection options			 */
 		while( ( c = poptGetNextOpt( optCon ) ) >= 0 )	{
 			switch( c )	{
 				default:
@@ -473,7 +571,12 @@ main(
 					}
 
 					break;
-
+				case 'D':
+					++debug_level;
+					break;
+				case 'a':
+					choices = ~0;
+					break;
 				case 'e':
 					choices |= CHOICE_E;
 					break;
@@ -503,7 +606,7 @@ main(
 					break;
 			}
 		}
-
+		/* Handle unknown option by bailing out.		 */
 		if( c < -1 )	{
 			usage(
 				optCon,
@@ -515,9 +618,20 @@ main(
 			exit( 1 );
 		}
 	} while( 0 );
-	/* Push selection actions onto the action stack			 */
+	/* If we saw an error earlier, bail out.			 */
+	if( nonfatal )	{
+		exit( 1 );
+		/*NOTREACHED*/
+	}
+	/*
+	 *----------------------------------------------------------------
+	 * Just for fun, let's build a NULL-terminated jump table, with
+	 * one entry for each error class we'd like to decode.
+	 *----------------------------------------------------------------
+	 */
 	if( ! choices )	{
-		choices |= ~0U;	/* Default to all tables		 */
+		/* No selection implies just system call error values	 */
+		choices |= CHOICE_E;
 	}
 	if( choices & CHOICE_E )	{
 		*next_action++ = &errdict;
@@ -538,91 +652,85 @@ main(
 		*next_action++ = &webdict;
 	}
 	*next_action = NULL;
-	/*								 */
-	if( !nonfatal ) do	{
-			if( sw_l )	{
-				do_list();
+	/* If asked for a list, do that specially			 */
+	if( sw_l )	{
+		show_the_matrix();
+		exit( 0 );
+		/*NOTREACHED*/
+	}
+	/* Process command line arguments, if any			 */
+	if( poptPeekArg( optCon ) )	{
+		/* Take additional arguments as stuff to explain	 */
+		char const *	name;
+
+		while( ( name = poptGetArg( optCon ) ) != NULL ) {
+			explain_term( name );
+		}
+	} else	{
+		/* No more arguments, so show everything		 */
+		int const	interactive = isatty( fileno( stdin ) );
+		char		prompt[ BUFSIZ + 1 ];
+		size_t		needed;
+		/* Build prompt, even if we don't need it */
+		needed = snprintf(
+				 prompt,
+				 sizeof( prompt ),
+				 "%s> ",
+				 me
+			 );
+		prompt[ DIM( prompt ) - 1 ] = '\0';
+
+		if( needed >= sizeof( prompt ) )	{
+			fprintf(
+				stderr,
+				"%s: %s\n",
+				me,
+				_( "Internal prompt buffer too small" )
+			);
+			exit( 1 );
+			/* NOTREACHED			 */
+		}
+
+		/* Get an process each stdin line	 */
+		while( !feof( stdin ) )	{
+			char * const	line = readline(
+						       interactive ? prompt : NULL
+					       );
+			char	*	name;
+			char	*	lp;
+
+			/* Recognize EOF		 */
+			if( !line )	{
+				if( interactive )	{
+					printf( "\n[EOF]\n" );
+				}
+
 				break;
 			}
 
-			if( !choices )	{
-				choices |= CHOICE_E;
+			if( interactive )	{
+				add_history( line );
 			}
 
-			/* Process command line arguments, if any	 */
-			if( poptPeekArg( optCon ) )	{
-				/* More arguments remaining		 */
-				char const *	name;
+			/* Drop comments		 */
+			lp = strchr( line, '#' );
 
-				while( ( name = poptGetArg( optCon ) ) != NULL ) {
-					explain_term( name );
-				}
-			} else	{
-				int const	interactive = isatty( fileno( stdin ) );
-				char		prompt[ BUFSIZ + 1 ];
-				size_t		needed;
-				/* Build prompt, even if we don't need it */
-				needed = snprintf(
-						 prompt,
-						 sizeof( prompt ),
-						 "%s> ",
-						 me
-					 );
-				prompt[ DIM( prompt ) - 1 ] = '\0';
-
-				if( needed >= sizeof( prompt ) )	{
-					fprintf(
-						stderr,
-						"%s: %s\n",
-						me,
-						_( "Internal prompt buffer too small" )
-					);
-					exit( 1 );
-					/* NOTREACHED			 */
-				}
-
-				/* Get an process each stdin line	 */
-				while( !feof( stdin ) )	{
-					char * const	line = readline(
-								       interactive ? prompt : NULL
-							       );
-					char	*	name;
-					char	*	lp;
-
-					/* Recognize EOF		 */
-					if( !line )	{
-						if( interactive )	{
-							printf( "\n[EOF]\n" );
-						}
-
-						break;
-					}
-
-					if( interactive )	{
-						add_history( line );
-					}
-
-					/* Drop comments		 */
-					lp = strchr( line, '#' );
-
-					if( lp )	{
-						*lp = '\0';
-					}
-
-					/* Explain remaining tokens	 */
-					for(
-						lp = line;
-						( name = strtok( lp, " \t\n" ) ) != NULL;
-						lp = NULL
-					)	{
-						explain_term( name );
-					}
-
-					/* Discard the line, we're done	 */
-					free( line );
-				}
+			if( lp )	{
+				*lp = '\0';
 			}
-		} while( 0 );
 
+			/* Explain remaining tokens	 */
+			for(
+				lp = line;
+				( name = strtok( lp, " \t\n" ) ) != NULL;
+				lp = NULL
+			)	{
+				explain_term( name );
+			}
+
+			/* Discard the line, we're done	 */
+			free( line );
+		}
+	}
 	return( nonfatal ? 1 : 0 );
 }

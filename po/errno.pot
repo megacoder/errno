@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
-# This file is distributed under the same license as the errno package.
+# This file is distributed under the same license as the GNU errno package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: errno 1.2.1\n"
+"Project-Id-Version: GNU errno 1.2.1\n"
 "Report-Msgid-Bugs-To: Tommy.Reynolds@MegaCoder.com\n"
-"POT-Creation-Date: 2016-08-15 13:06-0500\n"
+"POT-Creation-Date: 2016-09-09 15:26-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/errno.c:87
+#: src/errno.c:88
+msgid "No seleciton implies all error classes."
+msgstr ""
+
+#: src/errno.c:97
 msgid "Treat N as a pam(8) error."
 msgstr ""
 
-#: src/errno.c:96
+#: src/errno.c:106
 msgid "Treat N as a signal value."
 msgstr ""
 
-#: src/errno.c:105
+#: src/errno.c:115
 msgid "Treat N as a errno value."
 msgstr ""
 
-#: src/errno.c:114
+#: src/errno.c:124
 msgid "List a table of all known values"
 msgstr ""
 
-#: src/errno.c:123
+#: src/errno.c:133
 msgid "decode network error values"
 msgstr ""
 
-#: src/errno.c:132
+#: src/errno.c:142
 msgid "decode X11 return values"
 msgstr ""
 
-#: src/errno.c:141
+#: src/errno.c:151
 msgid "decode html web status values"
 msgstr ""
 
@@ -53,6 +57,6 @@ msgstr ""
 msgid "[NO DESCRIPTION]"
 msgstr ""
 
-#: src/errno.c:680
+#: src/errno.c:590
 msgid "Internal prompt buffer too small"
 msgstr ""
