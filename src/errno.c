@@ -358,11 +358,20 @@ explain_de(
 
 static	void
 explain_term(
-	char const	*	name
+	char const	*	spelling
 )
 {
 	dict_t const * *	dict_addr;
+	char const *		name;
+	char const *		leadin;
 
+	if( spelling[0] == '-' )	{
+		leadin = "-";
+		name   = spelling + 1;
+	} else	{
+		leadin = "";
+		name   = spelling;
+	}
 	if( isdigit( name[0] ) )	{
 		char *		eos;
 		unsigned long	k;
@@ -376,7 +385,7 @@ explain_term(
 				name
 			);
 		}
-		printf( "%s", name );
+		printf( "%s%s", leadin, name );
 		for( dict_addr = actions; *dict_addr; ++dict_addr )	{
 			if( k < (*dict_addr)->n )	{
 				dict_entry_t const * const	de =
@@ -392,6 +401,10 @@ explain_term(
 		}
 		printf( "\n" );
 	} else	{
+		/* Drop any leading '-' for the name			 */
+		if( name[0] == '-' )	{
+			++name;
+		}
 		for( dict_addr = actions; *dict_addr; ++dict_addr )	{
 			dict_entry_t const * const	de = name_to_de(
 				*dict_addr,
