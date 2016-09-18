@@ -1,3 +1,40 @@
+2016-09-18  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errno.c: Handle leading "-" again on both names and error
+	numbers.
+
+2016-09-18  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/en_US.po, po/errno.pot, src/errno.c: Display the matrix (-l)
+	reasonably
+
+2016-09-09  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* bootstrap.sh: Automatically output a log mess.
+
+2016-09-09  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* src/errno.c: Removed compilation warning messages
+
+2016-08-17  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/en_US.po, po/errno.pot, src/errno.c, src/pamnames.c: Bars under
+	the title
+
+2016-08-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* configure.ac: Pick a name from popt library for checking.
+
+2016-08-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* po/en_US.po, po/errno.pot, src/dict.h, src/errno.c,
+	src/get-err-names, src/get-net-names, src/get-sig-names,
+	src/get-web-names, src/get-x11-names: Add title to data tables.
+
+2016-08-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
+
+	* ChangeLog: Update changes
+
 2016-08-15  Tommy Reynolds <Tommy.Reynolds@MegaCoder.com>
 
 	* configure.ac: Bumped version number
