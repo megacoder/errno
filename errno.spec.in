@@ -13,7 +13,7 @@ License: GPLv2
 URL: http://www.megacoder.com/
 Group: Applications/System
 Buildroot: %{_tmppath}/%{name}-root
-BuildRequires: popt-devel xorg-x11-proto-devel
+BuildRequires: popt-devel xorg-x11-proto-devel pam-devel
 
 %description
 You can use %{name}(1) to translate a numeric system error code into the
